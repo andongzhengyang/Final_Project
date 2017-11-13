@@ -49,6 +49,7 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
 #Histograms, boxplots?
 
 #Univariate analyses
+
 summary(data2) #fresh
 
 p1 <- data2 %>% ggplot()
