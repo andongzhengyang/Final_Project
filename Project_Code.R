@@ -50,7 +50,7 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
 
 #Univariate analyses
 
-summary(data2) #fresh
+summary(data2)
 
 p1 <- data2 %>% ggplot()
 p1 + geom_histogram(aes(COST))
