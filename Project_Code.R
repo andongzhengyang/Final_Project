@@ -2,7 +2,7 @@
 #Authors: Kara Higgins & Ray An
 
 #TO DO BY MONDAY NOV. 20
-# Kara:
+# Kara
 #   Redo univariate statistics, make plots look pretty and clean up code
 #   Import weather data
 #   Figure out code for Mann-Whitney U test and spearman correlation coefficent
