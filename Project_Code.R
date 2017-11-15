@@ -1,6 +1,16 @@
 #Title: BST 260 Final Project
 #Authors: Kara Higgins & Ray An
 
+#TO DO BY MONDAY NOV. 20
+# Kara:
+#   Redo univariate statistics, make plots look pretty and clean up code
+#   Import weather data
+#   Figure out code for Mann-Whitney U test and spearman correlation coefficent
+# Ray:
+#   Clean up code for regressions/plots so there is only one version of each
+#   Try to figure out heat map and decide what will go into it
+#   Find a good city map and figure out how to put points on it for beginning and end
+
 
 #Packages
 library(tidyverse)
@@ -52,6 +62,7 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
 
 summary(data2)
 
+#ADD COMMENTS FOR EVERYTHING
 p1 <- data2 %>% ggplot()
 p1 + geom_histogram(aes(COST))
 p1 + geom_boxplot(aes(SERVICE, COST))
@@ -74,6 +85,8 @@ library(dslabs)
 library(ggthemes)
 library(ggrepel)
 
+
+#ADD COMMENTS FOR EVERYTHING
 p2 <- data2 %>% ggplot()
 
 #Plot of total duration vs cost
@@ -100,8 +113,6 @@ data2 %>% filter(AM_PM=="PM") %>% ggplot() +
 
 # Havent gone through this together yet
 ###################################################
-#More ideas:
-# Heat map
 
 p2 + geom_abline(intercept = log10(COST_PER_MIN), lty = 2, color = "darkgrey") +
   geom_point(aes(col=TIME), size = 3)  
@@ -171,7 +182,21 @@ d
 
 t.test(b,d) 
 
+#Kara will try out Mann-Whitney and Spearman code
+#Ray might try to make a heat map if he has time
 
-#STEP 4 - both Kara & Ray
-#Look at examples of old projects and brainstorm ideas for what other code we want to write.
+#More analysis ideas:
+#Mann-Whitney U test
+#Spearman correlation coefficient
+#Research Q for website: How much $ do you lose by not knowing about the cheaper service
+#(or how much monday are you saving by being savvy). -> t test? And stratify at different times of day
+#More ideas:
+# Heat map
+
+#Graph with x=time of day, y=some outcome (cost, duration), stratify the plot by morning/night
+#   Use painted looking plot
+#Somehow get a map and plot the stations on it
+#Bar graph that shows average cost by hour (similar to a line graph but would have some body to it)
+
+#Incoporate weather data
 
