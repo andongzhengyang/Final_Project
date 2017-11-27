@@ -3,9 +3,9 @@
 
 #TO DO BY MONDAY NOV. 20
 # Kara
-#   Redo univariate statistics, make plots look pretty and clean up code
+#   Redo univariate statistics, make plots look pretty and clean up code - DONE
 #   Import weather data
-#   Figure out code for Mann-Whitney U test and spearman correlation coefficent
+#   Figure out code for Mann-Whitney U test and spearman correlation coefficent - DONE
 # Ray:
 #   Clean up code for regressions/plots so there is only one version of each
 #   Try to figure out heat map and decide what will go into it
@@ -90,33 +90,76 @@ p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="
   facet_wrap(~COLLECTOR, dir="v")
 
 #Ride cost - histogram
-# Calculate medians to label plot
-p_med <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_cost=median(COST))
 p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth = 2) +
-  geom_text(data = p_med, aes(x = med_cost, y = .5, label = med_cost), size = 3, vjust = -1)+
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Cost by Service and AM/PM Rush")+
   theme(legend.position = "none")
 
-#Ride cost - box plot
+##Ride request time distribution BY COLLECTOR - graph shows all-day
+p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
+  geom_vline(xintercept=c(8,10,17,19), lty=2) +
+  geom_label(aes(label="Morning Rush", x=9, y=.6))+
+  geom_label(aes(label="Evening Rush", x=18, y=.6))+
+  ggtitle("Distribution of Ride Request Time (24 hr clock)") +
+  facet_wrap(~COLLECTOR, dir="v")
+
+#Cost/min - histogram
+p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", binwidth=.1) +
+  facet_grid(SERVICE~AM_PM) +
+  ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+
+#Cost/min - box plot
+# Calculate medians to label plot
+p_med_costmin <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_costmin=median(COST_PER_MIN))
 # Make plot
-p + geom_boxplot(aes(SERVICE, COST, fill=SERVICE)) +
-  geom_text(data = p_med, aes(x = SERVICE, y = med_cost, label = med_cost), size = 3, vjust = -1)+
+p + geom_boxplot(aes(SERVICE, COST_PER_MIN, fill=SERVICE)) +
+  geom_text(data = p_med_costmin, aes(x = SERVICE, y = med_costmin, label = round(med_costmin, 3)), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
-  ggtitle("Distribution of Cost by Service and AM/PM Rush")+
+  ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
   theme(legend.position = "none")
 
 #Wait time - histogram
+p + geom_histogram(aes(WAIT_TIME,..density.., fill=SERVICE), color="black", binwidth = 1) +
+  facet_grid(SERVICE~AM_PM) +
+  ggtitle("Distribution of Wait Time by Service and AM/PM Rush")+
+  theme(legend.position = "none")
 
+#Total duration - histogram
+p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
+  facet_grid(SERVICE~AM_PM) +
+  ggtitle("Distribution of Total Duration by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+
+#Total duration - box plot
+# Calculate medians to label plot
+p_med_dur <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_dur=median(TOTAL_DURATION))
+# Make plot
+p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
+  geom_text(data = p_med_dur, aes(x = SERVICE, y = med_dur, label = med_dur), size = 3, vjust = -1)+
+  facet_wrap(~AM_PM) +
+  ggtitle("Distribution of Duration by Service and AM/PM Rush")+
+  theme(legend.position = "none")
 
 #Spearman and Mann-Whitney U
 #Spearman -> cor(x,y,method="spearman")
+#Testing whether total ride duration and total cost are correlated
 sp <- cor.test(data2$TOTAL_DURATION, data2$COST, method="spearman", exact=F)
 print(sp)
+
+#Testing whether wait time and total cost are correlated
+sp_wait_cost <- cor.test(data2$WAIT_TIME, data2$COST, method="spearman", exact=F)
+print(sp_wait_cost)
 
 #Mann-Whitney - Lyft comes first in the list of factors so less would test if Lyft costs less than Uber
 wilcox.test(data2$COST~data2$SERVICE, alternative="less", exact=F)
 wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
+
+#Read in weather data
+library(weatherData)
+w <- checkDataAvailability("KMABOSTO198", "2017-11-20")
+
+
 
 #STEP 3
 #Exploratory continued...
@@ -127,8 +170,6 @@ wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
 
 # Plot price over time
 
-library(dslabs)
-library(ggthemes)
 library(ggrepel)
 
 
@@ -165,9 +206,6 @@ p2 + geom_abline(intercept = log10(COST_PER_MIN), lty = 2, color = "darkgrey") +
 
 p <- p + scale_color_discrete(name = "time1") 
 
-ds_theme_set()
-
-library(ggthemes)
 p + theme_economist()
 
 
@@ -244,10 +282,6 @@ t.test(b,d)
 ####adding new staff about map 
 
 #add map
-
-install.packages(c("ggplot2", "devtools", "dplyr", "stringr"))
-
-install.packages(c("maps", "mapdata"))
 
 devtools::install_github("dkahle/ggmap")
 
