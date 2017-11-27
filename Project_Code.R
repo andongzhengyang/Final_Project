@@ -239,3 +239,291 @@ t.test(b,d)
 
 #Incoporate weather data
 
+
+
+####adding new staff about map 
+
+#add map
+
+install.packages(c("ggplot2", "devtools", "dplyr", "stringr"))
+
+install.packages(c("maps", "mapdata"))
+
+devtools::install_github("dkahle/ggmap")
+
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+usa <- map_data("usa")
+dim(usa)
+head(usa)
+tail(usa)
+w2hr <- map_data("world2Hires")
+dim(w2hr)
+head(w2hr)
+tail(w2hr)
+usa <- map_data("usa") # we already did this, but we can do it again
+ggplot() + geom_polygon(data = usa, aes(x=long, y = lat, group = group)) + 
+  coord_fixed(1.3)
+ggplot() + 
+  geom_polygon(data = usa, aes(x=long, y = lat, group = group), fill = NA, color = "red") + 
+  coord_fixed(1.3)
+gg1 <- ggplot() + 
+  geom_polygon(data = usa, aes(x=long, y = lat, group = group), fill = "violet", color = "blue") + 
+  coord_fixed(1.3)
+gg1
+labs <- data.frame(
+  long = c(-122.064873, -122.306417),
+  lat = c(36.951968, 47.644855),
+  names = c("SWFSC-FED", "NWFSC"),
+  stringsAsFactors = FALSE
+)  
+gg1 + 
+  geom_point(data = labs, aes(x = long, y = lat), color = "black", size = 5) +
+  geom_point(data = labs, aes(x = long, y = lat), color = "yellow", size = 4)
+ggplot() + 
+  geom_polygon(data = usa, aes(x=long, y = lat), fill = "violet", color = "blue") + 
+  geom_point(data = labs, aes(x = long, y = lat), color = "black", size = 5) +
+  geom_point(data = labs, aes(x = long, y = lat), color = "yellow", size = 4) +
+  coord_fixed(1.3)
+states <- map_data("state")
+dim(states)
+
+head(states)
+
+tail(states)
+
+
+
+ggplot(data = states) + 
+  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
+  coord_fixed(1.3) +
+  guides(fill=FALSE)  # do this to leave off the color legend
+#####
+
+chanstudent <- subset(states, region %in% c("massachusetts"))
+ggplot(data = chanstudent) + 
+  geom_polygon(aes(x = long, y = lat), fill = "palegreen", color = "black") 
+
+
+
+ggplot(data = chanstudent) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "palegreen", color = "black") + 
+  coord_fixed(1.3)
+
+ca_df <- subset(states, region == "massachusetts")
+
+head(ca_df)
+
+counties <- map_data("county")
+ca_county <- subset(counties, region == "massachusetts")
+
+head(ca_county)
+
+ca_base <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(color = "black", fill = "gray")
+ca_base + theme_nothing()
+
+ca_base + theme_nothing() + 
+  geom_polygon(data = ca_county, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back on top
+
+
+
+
+
+
+
+
+
+
+
+
+### boston city map
+
+#install.packages('ggmap')
+library(ggmap)
+
+bos_plot=ggmap(get_map('Boston, Massachusetts',
+                       zoom=13,
+                       source='google',
+                       maptype='terrain'))
+
+## Density areas
+bos_plot +
+  # density areas
+  stat_density2d(data = FREEZE_13NOV2017,
+                 aes(x = FREEZE_13NOV2017$COST, y = FREEZE_13NOV2017$TOTAL_DURATION, alpha=.75,fill=..level..),
+                 bins = 8,
+                 geom = 'polygon')+
+  #density legend
+  guides(fill = guide_colorbar(barwidth = 1, barheight = 10)) +
+  # crime data points
+  geom_point(data=FREEZE_13NOV2017,aes(x=FREEZE_13NOV2017$COST,y=FREEZE_13NOV2017$TOTAL_DURATION),
+             col='gray', alpha=.5,size=1)+
+  scale_alpha(guide = FALSE)+
+  # Labels/Title
+  xlab('')+ylab('')+
+  ggtitle('city rush hour - 2017 - Boston, MA')
+
+
+### 
+
+
+
+# google map
+
+
+install.packages("ggmap")
+
+library(ggmap)
+qmap("boston", zoom = 6) #Change zoom
+
+
+qmap(location = "Venderbilt Hall")
+
+qmap(location = "Venderbilt Hall", zoom = 14)
+
+qmap(location = "Venderbilt Hall", zoom = 14, source = "osm")
+
+
+mydata = read.csv("vehicle-accidents.csv")
+
+mydata$State <- as.character(mydata$State)
+
+mydata$MV.Number = as.numeric(mydata$MV.Number)
+
+
+
+for (i in 1:nrow(mydata)) {
+  
+  latlon = geocode(mydata[i,1])
+  
+  mydata$lon[i] = as.numeric(latlon[1])
+  
+  mydata$lat[i] = as.numeric(latlon[2])
+  
+}
+
+mv_num_collisions = data.frame(mydata$MV.Number, mydata$lon, mydata$lat)
+
+
+
+colnames(mv_num_collisions) = c('collisions','lon','lat')
+
+usa_center = as.numeric(geocode("United States"))
+
+
+
+USAMap = ggmap(get_googlemap(center=usa_center, scale=2, zoom=4), extent="normal")
+
+USAMap +
+  
+  geom_point(aes(x=lon, y=lat), data=mv_num_collisions, col="orange", alpha=0.4, size=mv_num_collisions$collisions*circle_scale_amt) + 
+  
+  scale_size_continuous(range=range(mv_num_collisions$collisions))
+
+
+
+
+
+
+
+
+
+
+# boston rush hour
+install.packages('ggmap') 
+install.packages('Rcpp')
+install.packages('sp')
+data(FREEZE_13NOV2017)
+qmap("boston", zoom = 13)
+
+bosotnMap <- qmap("boston", zoom = 14)  #First, get a map of Houston
+
+bostonMap+                                        ##This plots the Houston Map
+  geom_point(aes(x = COST, y = TOTAL_DURATION), data = FREEZE_13NOV2017)    ##This adds the points to it
+
+bostonMap+
+  geom_point(aes(x = COST, y = TOTAL_DURATION, colour = WAIT_TIME),
+             data = FREEZE_13NOV2017)
+bostonMap+
+  geom_point(aes(x = COST, y = TOTAL_DURATION, colour = WAIT_TIME),
+             data = FREEZE_13NOV2017)+
+  ggtitle("Map of Rush Hour in Boston")
+
+dev.off()  ##This command indicates that we're done creating our plot.  It finalizes and closes the .png file.
+
+geocode('107 Avenue Louis Pasteur, Boston, MA 02115')
+
+geocode('1 Harvard Yard, Cambridge, MA 02138')
+
+###heatmap
+
+install.packages("ggmap")
+library(ggmap)
+
+heatMap <-function(data,shape=NULL,col="blue",main="Sample HeatMap"){
+  # Plots a Heat Map of a Polygons Data Frame.  This will 
+  # demonstrate density within a finite set of polygons
+  #
+  # Args:
+  #   data:   Spatial Points dataframe
+  #   shape:  Polygons Data Frame 
+  #
+  #
+  #   Notes:  This function requires the sp and RColorBrewer
+  #           Packages
+  #
+  #   Beskow: 03/28/11   
+  #
+  is.installed <- function(mypkg) is.element(mypkg, 
+                                             installed.packages()[,1])
+  if (is.installed(mypkg="sp")==FALSE)  {
+    stop("sp package is not installed")}
+  if (is.installed(mypkg="RColorBrewer")==FALSE)  {
+    stop("RColorBrewer package is not installed")}
+  if (!class(data)=="SpatialPointsDataFrame")  {
+    stop("data argument is not SpatialPointsDataFrame")}
+  require(sp)
+  require(RColorBrewer)
+  freq_table<-data.frame(tabulate(over(as(data,"SpatialPoints"),
+                                       as(shape,"SpatialPolygons")),nbins=length(shape)))
+  names(freq_table)<-"counts"
+  
+  shape1<-spChFIDs(shape,as.character(1:length(shape)))
+  row.names(as(shape1,"data.frame"))
+  spdf<-SpatialPolygonsDataFrame(shape1, freq_table, match.ID = TRUE)
+  
+  rw.colors<-colorRampPalette(c("white",col))
+  spplot(spdf,scales = list(draw = TRUE),
+         col.regions=rw.colors(max(freq_table)), main=main)
+}
+
+library(sp)
+library(RColorBrewer)
+data(FREEZE_13NOV2017)
+
+
+boston <- get_map(location = "boston", zoom = 13) ##Get the houston map
+bostonMap<-ggmap(boston, extent = "COST")       ##Prepare Map
+
+bostonMap +
+  stat_density2d(aes(x = COST, y = TOTAL_DURATION, fill = ..level..,alpha=..level..), bins = 10, geom = "polygon", data = FREEZE_13NOV2017) +
+  scale_fill_gradient(low = "black", high = "red")+
+  ggtitle("Map of Rush Hour in Boston")
+
+
+# Draw the heat map
+ggmap(boatonMap, extent = "device") + geom_density2d(data = FREEZE_13NOV2017, aes(x = COST, y = TOTAL_DURATION, size = 0.3)) + 
+  stat_density2d(data = FREEZE_13NOV2017, 
+                 aes(x = COST, y = TOTAL_DURATION, fill = ..level.., alpha = ..level..), size = 0.01, 
+                 bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
+  scale_alpha(range = c(0, 0.3), guide = FALSE)
+
+
+
+
+
