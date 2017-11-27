@@ -1,17 +1,6 @@
 #Title: BST 260 Final Project
 #Authors: Kara Higgins & Ray An
 
-#TO DO BY MONDAY NOV. 20
-# Kara
-#   Redo univariate statistics, make plots look pretty and clean up code - DONE
-#   Import weather data
-#   Figure out code for Mann-Whitney U test and spearman correlation coefficent - DONE
-# Ray:
-#   Clean up code for regressions/plots so there is only one version of each
-#   Try to figure out heat map and decide what will go into it
-#   Find a good city map and figure out how to put points on it for beginning and end
-
-
 #Packages
 library(tidyverse)
 library(lubridate)
@@ -46,7 +35,7 @@ data <- read.csv(data_location, stringsAsFactors = F)
 #   TIME_FROM_MID: Time from midpoint of rush hour (midpoint=9am morning, 6pm evening)
 
 data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
-                         DAY_OF_WK=as.factor(DAY_OF_WK),
+                         DAY_OF_WK=factor(DAY_OF_WK, levels=c("Monday", "Tuesday", "Wednesday","Thursday","Friday")),
                          DATETIME=as.POSIXct(paste(DATE,TIME),format="%Y-%m-%d %H:%M"),
                          TIME=DATETIME-as.POSIXct(paste(DATE,"00:00:00"), format="%Y-%m-%d %H:%M"),
                          SERVICE=as.factor(SERVICE),
@@ -57,18 +46,9 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
                          COST_PER_MIN=COST/as.numeric(TOTAL_DURATION),
                          TIME_FROM_MID=ifelse(AM_PM=="AM",TIME-9, TIME-18)
                            )
-
-#STEP 2
-#Exploratory data analysis - KARA
-#Get univariate stats on time, cost, wait time, total duration
-#Are they normally distributed? What is the max/min for each variable, what is the sd like? What is the mean?
-#Histograms, boxplots?
-
-#Univariate analyses
-
-#Get univariate stats on time, cost, wait time, total duration
-#Are they normally distributed? What is the max/min for each variable, what is the sd like? What is the mean?
-#Histograms, boxplots?
+#Subset data into AM/PM for stratified analyses
+data2_AM <- data2 %>% filter(AM_PM=="AM")
+data2_PM <- data2 %>% filter(AM_PM=="PM")
 
 #####UNIVARIATE ANALYSES
 
@@ -146,11 +126,7 @@ p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
   ggtitle("Distribution of Duration by Service and AM/PM Rush")+
   theme(legend.position = "none")
 
-#Spearman and Mann-Whitney U
-
-#Subset data into AM/PM for stratified analyses
-data2_AM <- data2 %>% filter(AM_PM=="AM")
-data2_PM <- data2 %>% filter(AM_PM=="PM")
+########SPEARMAN AND MANN-WHITNEY U TEST
 
 #Spearman -> cor(x,y,method="spearman")
 #Testing whether total ride duration and total cost are correlated
@@ -176,20 +152,28 @@ wilcox.test(data2_PM$COST~data2_PM$SERVICE, alternative="less", exact=F)
 #Tests prob that a randomly selected Uber cost/min is greater than a rand sel Lyft cost/min
 wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
 
-#Read in weather data
-#Ideally would have 15 min intervals for temp and precip
-#On hold for now - try again later
-library(weatherData)
-w <- checkDataAvailability("KMABOSTO198", "2017-11-20")
 
-#STEP 3
-#Exploratory continued...
-#Plot price over time, all days combined/stratified by day of week (5 plots) - RAY
-#T-test of total duration Uber vs. Lyft - RAY
-#T-test of cost Uber vs. Lyft - RAY
-#Linear regression: test which variables make sense to put in, try squaring/taking square roots, etc. - KARA
+#######PLOTS OVER TIME:
 
-# Plot price over time
+#Plot price over time AM, all days combined/stratified by day of week (5 plots)
+data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
+  facet_wrap(~DAY_OF_WK, nrow = 1) +
+  ggtitle("Morning Commute Cost vs Time of Day")+
+  xlab("Time of Day")+
+  ylab("Cost ($)")
+
+#Plot price over time PM, all days combined/stratified by day of week (5 plots)
+data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
+  facet_wrap(~DAY_OF_WK, nrow = 1) +
+  ggtitle("Evening Commute Cost vs Time of Day")+
+  xlab("Time of Day")+
+  ylab("Cost ($)")
+
+#Plot average price in 15 min increments, AM
+data2 %>% 
+  group_by(inc=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), seq(17,19,.25)))) %>%
+  summarize(mean=mean(COST)) %>%
+  ggplot()+geom_col(aes(inc, mean))
 
 #Plot of cost vs total duration, color by service
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
@@ -215,10 +199,8 @@ data2 %>% filter(AM_PM=="AM") %>% ggplot() +
 data2 %>% filter(AM_PM=="PM") %>% ggplot() +
   geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
 
-#Can convert scale to log if needed
 
-
-# Havent gone through this together yet
+# Ray will look through this and clean it
 ###################################################
 
 p + geom_abline(intercept = log10(COST_PER_MIN), lty = 2, color = "darkgrey") +
