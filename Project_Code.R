@@ -17,6 +17,9 @@ library(tidyverse)
 library(lubridate)
 library(stringr)
 library(ggplot2)
+library(ggthemes)
+library(dslabs)
+ds_theme_set(new="theme_fivethirtyeight")
 
 #Import data
 #Currently using 13NOV2017 freeze
@@ -29,7 +32,7 @@ data <- read.csv(data_location, stringsAsFactors = F)
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
 #   DAY_OF_WK: Day of week of request. Format=factor w/ 5 levels
 #   REQUEST_DATETIME: Date and time combined. Format=R date
-#   REQUEST_TIME: Time of request, calculated as hours/min since start of the day. Format=R time
+#   TIME: Time of request, calculated as hours/min since start of the day. Format=R time
 #   SERVICE: Uber/Lyft. Format=factor w/ 2 levels
 #   COST: Cost of ride. Format=numeric double
 #   WAIT_TIME: Estimated wait time. Format=numeric
@@ -60,17 +63,60 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
 
 #Univariate analyses
 
+#Get univariate stats on time, cost, wait time, total duration
+#Are they normally distributed? What is the max/min for each variable, what is the sd like? What is the mean?
+#Histograms, boxplots?
+
+#####UNIVARIATE ANALYSES
+
+#Univariate statistics
 summary(data2)
 
-#ADD COMMENTS FOR EVERYTHING
-p1 <- data2 %>% ggplot()
-p1 + geom_histogram(aes(COST))
-p1 + geom_boxplot(aes(SERVICE, COST))
-p1 + geom_histogram(aes(WAIT_TIME), binwidth = 2)
-p1 + geom_histogram(aes(TOTAL_DURATION))
-p1 + geom_histogram(aes(COST_PER_MINUTE, fill=SERVICE))
+#Variables to get stats on: TIME, COST, WAIT_TIME, TOTAL_DURATION, COST_PER_MIN
+p <- data2 %>% ggplot()
+##Ride request time distribution - graph shows all-day
+p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
+  geom_vline(xintercept=c(8,10,17,19), lty=2) +
+  geom_label(aes(label="Morning Rush", x=9, y=.6))+
+  geom_label(aes(label="Evening Rush", x=18, y=.6))+
+  ggtitle("Distribution of Ride Request Time (24 hr clock)")
 
-#Cost, wait time are going to be very skewed to the right, can't do lin reg.
+##Ride request time distribution BY COLLECTOR - graph shows all-day
+p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
+  geom_vline(xintercept=c(8,10,17,19), lty=2) +
+  geom_label(aes(label="Morning Rush", x=9, y=.6))+
+  geom_label(aes(label="Evening Rush", x=18, y=.6))+
+  ggtitle("Distribution of Ride Request Time (24 hr clock)") +
+  facet_wrap(~COLLECTOR, dir="v")
+
+#Ride cost - histogram
+# Calculate medians to label plot
+p_med <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_cost=median(COST))
+p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth = 2) +
+  geom_text(data = p_med, aes(x = med_cost, y = .5, label = med_cost), size = 3, vjust = -1)+
+  facet_grid(SERVICE~AM_PM) +
+  ggtitle("Distribution of Cost by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+
+#Ride cost - box plot
+# Make plot
+p + geom_boxplot(aes(SERVICE, COST, fill=SERVICE)) +
+  geom_text(data = p_med, aes(x = SERVICE, y = med_cost, label = med_cost), size = 3, vjust = -1)+
+  facet_wrap(~AM_PM) +
+  ggtitle("Distribution of Cost by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+
+#Wait time - histogram
+
+
+#Spearman and Mann-Whitney U
+#Spearman -> cor(x,y,method="spearman")
+sp <- cor.test(data2$TOTAL_DURATION, data2$COST, method="spearman", exact=F)
+print(sp)
+
+#Mann-Whitney - Lyft comes first in the list of factors so less would test if Lyft costs less than Uber
+wilcox.test(data2$COST~data2$SERVICE, alternative="less", exact=F)
+wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
 
 #STEP 3
 #Exploratory continued...
@@ -182,16 +228,9 @@ d
 
 t.test(b,d) 
 
-#Kara will try out Mann-Whitney and Spearman code
-#Ray might try to make a heat map if he has time
-
 #More analysis ideas:
-#Mann-Whitney U test
-#Spearman correlation coefficient
 #Research Q for website: How much $ do you lose by not knowing about the cheaper service
 #(or how much monday are you saving by being savvy). -> t test? And stratify at different times of day
-#More ideas:
-# Heat map
 
 #Graph with x=time of day, y=some outcome (cost, duration), stratify the plot by morning/night
 #   Use painted looking plot
