@@ -17,6 +17,11 @@ data_location <- "C:/Users/kara.THETA_HQ/Documents/Harvard/Classes/Fall 2017/BST
 
 data <- read.csv(data_location, stringsAsFactors = F)
 
+
+
+data_location <- "~/Desktop/R programming/uberproject260/FREEZE_13NOV2017.csv"
+
+data <- read.csv(data_location, stringsAsFactors = F)
 #STEP 1
 #Get data in correct format - specs are as follows: RAY will send to Kara by Sunday
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
@@ -203,39 +208,19 @@ data2 %>% filter(AM_PM=="PM") %>% ggplot() +
 # Ray will look through this and clean it
 ###################################################
 
-p + geom_abline(intercept = log10(COST_PER_MIN), lty = 2, color = "darkgrey") +
-  geom_point(aes(col=TIME), size = 3)  
 
-p2 <- p + scale_color_discrete(name = "time1") 
-
-p + theme_economist()
-
-
-
-p + geom_point(size = 3) +  
-  geom_text(nudge_x = 0.05) + 
-  scale_x_continuous(trans = "log10") +
-  scale_y_continuous(trans = "log10") 
-
-
-p + geom_point(size = 3) +  
-  geom_text(nudge_x = 0.05) + 
-  scale_x_log10() +
-  scale_y_log10()  
-
-
-p + geom_point(size = 3) +  
-  geom_text(nudge_x = 0.05) + 
+data2 %>% ggplot(aes(x = TOTAL_DURATION, y = COST, label = DATETIME)) +  
+  geom_abline(intercept = log10(data2$COST_PER_MIN), lty=2, col="darkgrey") +
+  geom_point(aes(color=WAIT_TIME), size = 3) +
+  geom_text_repel() + 
   scale_x_log10() +
   scale_y_log10() +
-  xlab("Price") + 
-  ylab("Total duration") +
-  ggtitle("price over time")
+  xlab("TOTAL DUATION  (log scale)") + 
+  ylab("COST of service (log scale)") +
+  ggtitle("COST of service with TOTAL DURATION") +
+  scale_color_discrete(name="WAIT_TIME") +
+  theme_economist()
 
-
-p + geom_point(size = 3, color ="blue")
-
-p + geom_point(aes(col=time1), size = 3)
 
 
 
@@ -254,29 +239,16 @@ p + geom_point(aes(col=time1), size = 3)
 
 ####adding new staff about map 
 
-#add map
-
-
-
-library(ggplot2)
-library(ggmap)
-library(maps)
-library(mapdata)
-usa <- map_data("usa")
-dim(usa)
-head(usa)
-tail(usa)
-
-
-#install.packages('ggmap')
-library(ggmap)
-
 
 
 # boston rush hour
 library(ggmap) 
 library(Rcpp)
 library(sp)
+library(ggplot2)
+library(maps)
+library(mapdata)
+library(RColorBrewer)
 
 bostonMap <- qmap("boston", zoom = 12)  #First, get a map of Boston
 
@@ -287,54 +259,14 @@ dev.off()  ##This command indicates that we're done creating our plot.  It final
 
 #Combine to form one dataset
 vand <- geocode("107 Avenue Louis Pasteur Boston, MA 02115")
+vand
 widener <- geocode("1 Harvard Yard Cambridge, MA 02138")
+widener
+
 #There should be a function that lets you stack these to form one dataset
 
 ###heatmap
 
-install.packages("ggmap")
-library(ggmap)
-
-heatMap <-function(data,shape=NULL,col="blue",main="Sample HeatMap"){
-  # Plots a Heat Map of a Polygons Data Frame.  This will 
-  # demonstrate density within a finite set of polygons
-  #
-  # Args:
-  #   data:   Spatial Points dataframe
-  #   shape:  Polygons Data Frame 
-  #
-  #
-  #   Notes:  This function requires the sp and RColorBrewer
-  #           Packages
-  #
-  #   Beskow: 03/28/11   
-  #
-  is.installed <- function(mypkg) is.element(mypkg, 
-                                             installed.packages()[,1])
-  if (is.installed(mypkg="sp")==FALSE)  {
-    stop("sp package is not installed")}
-  if (is.installed(mypkg="RColorBrewer")==FALSE)  {
-    stop("RColorBrewer package is not installed")}
-  if (!class(data)=="SpatialPointsDataFrame")  {
-    stop("data argument is not SpatialPointsDataFrame")}
-  require(sp)
-  require(RColorBrewer)
-  freq_table<-data.frame(tabulate(over(as(data,"SpatialPoints"),
-                                       as(shape,"SpatialPolygons")),nbins=length(shape)))
-  names(freq_table)<-"counts"
-  
-  shape1<-spChFIDs(shape,as.character(1:length(shape)))
-  row.names(as(shape1,"data.frame"))
-  spdf<-SpatialPolygonsDataFrame(shape1, freq_table, match.ID = TRUE)
-  
-  rw.colors<-colorRampPalette(c("white",col))
-  spplot(spdf,scales = list(draw = TRUE),
-         col.regions=rw.colors(max(freq_table)), main=main)
-}
-
-library(sp)
-library(RColorBrewer)
-data(FREEZE_13NOV2017)
 
 
 boston <- get_map(location = "boston", zoom = 13) ##Get the houston map
