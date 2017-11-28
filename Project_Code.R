@@ -256,7 +256,7 @@ p + geom_point(aes(col=time1), size = 3)
 
 #add map
 
-devtools::install_github("dkahle/ggmap")
+
 
 library(ggplot2)
 library(ggmap)
@@ -266,178 +266,10 @@ usa <- map_data("usa")
 dim(usa)
 head(usa)
 tail(usa)
-w2hr <- map_data("world2Hires")
-dim(w2hr)
-head(w2hr)
-tail(w2hr)
-usa <- map_data("usa") # we already did this, but we can do it again
-ggplot() + geom_polygon(data = usa, aes(x=long, y = lat, group = group)) + 
-  coord_fixed(1.3)
-ggplot() + 
-  geom_polygon(data = usa, aes(x=long, y = lat, group = group), fill = NA, color = "red") + 
-  coord_fixed(1.3)
-gg1 <- ggplot() + 
-  geom_polygon(data = usa, aes(x=long, y = lat, group = group), fill = "violet", color = "blue") + 
-  coord_fixed(1.3)
-gg1
-labs <- data.frame(
-  long = c(-122.064873, -122.306417),
-  lat = c(36.951968, 47.644855),
-  names = c("SWFSC-FED", "NWFSC"),
-  stringsAsFactors = FALSE
-)  
-gg1 + 
-  geom_point(data = labs, aes(x = long, y = lat), color = "black", size = 5) +
-  geom_point(data = labs, aes(x = long, y = lat), color = "yellow", size = 4)
-ggplot() + 
-  geom_polygon(data = usa, aes(x=long, y = lat), fill = "violet", color = "blue") + 
-  geom_point(data = labs, aes(x = long, y = lat), color = "black", size = 5) +
-  geom_point(data = labs, aes(x = long, y = lat), color = "yellow", size = 4) +
-  coord_fixed(1.3)
-states <- map_data("state")
-dim(states)
 
-head(states)
-
-tail(states)
-
-
-
-ggplot(data = states) + 
-  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
-  coord_fixed(1.3) +
-  guides(fill=FALSE)  # do this to leave off the color legend
-#####
-
-chanstudent <- subset(states, region %in% c("massachusetts"))
-ggplot(data = chanstudent) + 
-  geom_polygon(aes(x = long, y = lat), fill = "palegreen", color = "black") 
-
-
-
-ggplot(data = chanstudent) + 
-  geom_polygon(aes(x = long, y = lat, group = group), fill = "palegreen", color = "black") + 
-  coord_fixed(1.3)
-
-ca_df <- subset(states, region == "massachusetts")
-
-head(ca_df)
-
-counties <- map_data("county")
-ca_county <- subset(counties, region == "massachusetts")
-
-head(ca_county)
-
-ca_base <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
-  coord_fixed(1.3) + 
-  geom_polygon(color = "black", fill = "gray")
-ca_base + theme_nothing()
-
-ca_base + theme_nothing() + 
-  geom_polygon(data = ca_county, fill = NA, color = "white") +
-  geom_polygon(color = "black", fill = NA)  # get the state border back on top
-
-
-
-
-
-
-
-
-
-
-
-
-### boston city map
 
 #install.packages('ggmap')
 library(ggmap)
-
-bos_plot=ggmap(get_map('Boston, Massachusetts',
-                       zoom=13,
-                       source='google',
-                       maptype='terrain'))
-
-## Density areas
-bos_plot +
-  # density areas
-  stat_density2d(data = FREEZE_13NOV2017,
-                 aes(x = FREEZE_13NOV2017$COST, y = FREEZE_13NOV2017$TOTAL_DURATION, alpha=.75,fill=..level..),
-                 bins = 8,
-                 geom = 'polygon')+
-  #density legend
-  guides(fill = guide_colorbar(barwidth = 1, barheight = 10)) +
-  # crime data points
-  geom_point(data=FREEZE_13NOV2017,aes(x=FREEZE_13NOV2017$COST,y=FREEZE_13NOV2017$TOTAL_DURATION),
-             col='gray', alpha=.5,size=1)+
-  scale_alpha(guide = FALSE)+
-  # Labels/Title
-  xlab('')+ylab('')+
-  ggtitle('city rush hour - 2017 - Boston, MA')
-
-
-### 
-
-
-
-# google map
-
-
-install.packages("ggmap")
-
-library(ggmap)
-qmap("boston", zoom = 6) #Change zoom
-
-
-qmap(location = "Venderbilt Hall")
-
-qmap(location = "Venderbilt Hall", zoom = 14)
-
-qmap(location = "Venderbilt Hall", zoom = 14, source = "osm")
-
-
-mydata = read.csv("vehicle-accidents.csv")
-
-mydata$State <- as.character(mydata$State)
-
-mydata$MV.Number = as.numeric(mydata$MV.Number)
-
-
-
-for (i in 1:nrow(mydata)) {
-  
-  latlon = geocode(mydata[i,1])
-  
-  mydata$lon[i] = as.numeric(latlon[1])
-  
-  mydata$lat[i] = as.numeric(latlon[2])
-  
-}
-
-mv_num_collisions = data.frame(mydata$MV.Number, mydata$lon, mydata$lat)
-
-
-
-colnames(mv_num_collisions) = c('collisions','lon','lat')
-
-usa_center = as.numeric(geocode("United States"))
-
-
-
-USAMap = ggmap(get_googlemap(center=usa_center, scale=2, zoom=4), extent="normal")
-
-USAMap +
-  
-  geom_point(aes(x=lon, y=lat), data=mv_num_collisions, col="orange", alpha=0.4, size=mv_num_collisions$collisions*circle_scale_amt) + 
-  
-  scale_size_continuous(range=range(mv_num_collisions$collisions))
-
-
-
-
-
-
-
 
 
 
