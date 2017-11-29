@@ -265,6 +265,15 @@ widener
 
 #There should be a function that lets you stack these to form one dataset
 
+map <- get_map(location = 'boston', zoom = 4)
+mapPoints <- ggmap(map)
+
+mapPoints +
+  geom_point(aes(x = lon, y = lat), col = "orange", data = data2)
+
+
+mapPoints +
+  geom_line(aes(x = lon, y = lat), col = "orange", data = data2)
 ###heatmap
 
 
@@ -279,13 +288,52 @@ bostonMap +
 
 
 # Draw the heat map
-ggmap(boatonMap, extent = "device") + geom_density2d(data = FREEZE_13NOV2017, aes(x = COST, y = TOTAL_DURATION, size = 0.3)) + 
-  stat_density2d(data = FREEZE_13NOV2017, 
+ggmap(boatonMap, extent = "device") + geom_density2d(data = data2, aes(x = COST, y = TOTAL_DURATION, size = 0.3)) + 
+  stat_density2d(data = data2, 
                  aes(x = COST, y = TOTAL_DURATION, fill = ..level.., alpha = ..level..), size = 0.01, 
                  bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
   scale_alpha(range = c(0, 0.3), guide = FALSE)
 
 
+
+r <- data2 %>% 
+  select(COST, TOTAL_DURATION, WAIT_TIME) %>%
+  spread(COST, WAIT_TIME) %>% 
+  as.matrix()
+
+rownames(r) <- r[,1]
+r <- r[,-1]
+RUSH <- data2$title[match(colnames(r), movies$movieId)]
+
+i <- grep("Godfather, The", movie_titles)
+j <- grep("Goodf", movie_titles)
+qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
+
+i <- grep("Pretty Woman", movie_titles)
+j <- which(movie_titles == "Ghost")
+qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
+
+i <- grep("Godfather, The", movie_titles)
+j <- which(movie_titles == "Ghost")
+qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
+
+et.seed(1)
+options(digits = 2)
+Q <- matrix(c(1 , 1, 1, -1, -1), ncol=1)
+rownames(Q) <- c("Godfather1","Godfather2","Goodfellas","Pretty Woman","Ghost")
+P <- matrix(rep(c(2,0,-2), c(3,5,4)), ncol=1)
+rownames(P) <- 1:nrow(P)
+
+r <- jitter(P%*%t(Q), factor = 2)
+r %>% kable(align = "c")
+
+image(t(r))
+
+cor(r)
+
+cor(t(r))
+
+t(Q) %>% kable(aling="c")
 
 
 
