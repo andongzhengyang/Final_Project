@@ -17,11 +17,6 @@ data_location <- "C:/Users/kara.THETA_HQ/Documents/Harvard/Classes/Fall 2017/BST
 
 data <- read.csv(data_location, stringsAsFactors = F)
 
-
-
-data_location <- "~/Desktop/R programming/uberproject260/FREEZE_13NOV2017.csv"
-
-data <- read.csv(data_location, stringsAsFactors = F)
 #STEP 1
 #Get data in correct format - specs are as follows: RAY will send to Kara by Sunday
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
@@ -205,7 +200,7 @@ data2 %>% filter(AM_PM=="PM") %>% ggplot() +
   geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
 
 
-# Ray will look through this and clean it
+# Ray look through this and clean it
 ###################################################
 
 
@@ -235,12 +230,6 @@ data2 %>% ggplot(aes(x = TOTAL_DURATION, y = COST, label = DATETIME)) +
 
 #Incoporate weather data
 
-
-
-####adding new staff about map 
-
-
-
 # boston rush hour
 library(ggmap) 
 library(Rcpp)
@@ -249,91 +238,47 @@ library(ggplot2)
 library(maps)
 library(mapdata)
 library(RColorBrewer)
+library(ggrepel)
+
+
+
+devtools::install_github("hadley/ggplot2@v2.2.0")
+
 
 bostonMap <- qmap("boston", zoom = 12)  #First, get a map of Boston
-
-#Need to pull X and Y from a dataset of longitude and latitude if we want multiple points
-bostonMap+
-  geom_point(aes(x = lon, y = lat), data = data2, size=6) ##This adds the points to it
-dev.off()  ##This command indicates that we're done creating our plot.  It finalizes and closes the .png file.
-
 #Combine to form one dataset
 vand <- geocode("107 Avenue Louis Pasteur Boston, MA 02115")
 vand
 widener <- geocode("1 Harvard Yard Cambridge, MA 02138")
 widener
 
+#Need to pull X and Y from a dataset of longitude and latitude if we want multiple points
+bostonMap+
+  geom_point(aes(x = vand$lon, y = vand$lat), data = data2, size=6) ##This adds the points to it
+dev.off()  ##This command indicates that we're done creating our plot.  It finalizes and closes the .png file.
+
+bostonMap+
+  geom_point(aes(x = widener$lon, y = widener$lat), data = data2, size=6) ##This adds the points to it
+dev.off()
 #There should be a function that lets you stack these to form one dataset
 
-map <- get_map(location = 'boston', zoom = 4)
+map <- get_map(location = 'boston', zoom = 13)
 mapPoints <- ggmap(map)
 
 mapPoints +
-  geom_point(aes(x = lon, y = lat), col = "orange", data = data2)
+  geom_point(aes(x = vand$lon, y = vand$lat), col = "orange", data = data2)
 
 
 mapPoints +
-  geom_line(aes(x = lon, y = lat), col = "orange", data = data2)
+  geom_line(aes(x = vand$lon, y = vand$lat), col = "orange", data = data2)
 ###heatmap
 
 
 
-boston <- get_map(location = "boston", zoom = 13) ##Get the houston map
-bostonMap<-ggmap(boston, extent = "COST")       ##Prepare Map
-
+bostonMap <- qmap("boston", zoom = 12,extent = "COST" )
 bostonMap +
-  stat_density2d(aes(x = COST, y = TOTAL_DURATION, fill = ..level..,alpha=..level..), bins = 10, geom = "polygon", data = FREEZE_13NOV2017) +
+  stat_density2d(aes(x = vand$lon, y = vand$lat, fill = ..level..,alpha=..level..), bins = 10, geom = "polygon", data = data2) +
   scale_fill_gradient(low = "black", high = "red")+
   ggtitle("Map of Rush Hour in Boston")
-
-
-# Draw the heat map
-ggmap(boatonMap, extent = "device") + geom_density2d(data = data2, aes(x = COST, y = TOTAL_DURATION, size = 0.3)) + 
-  stat_density2d(data = data2, 
-                 aes(x = COST, y = TOTAL_DURATION, fill = ..level.., alpha = ..level..), size = 0.01, 
-                 bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
-  scale_alpha(range = c(0, 0.3), guide = FALSE)
-
-
-
-r <- data2 %>% 
-  select(COST, TOTAL_DURATION, WAIT_TIME) %>%
-  spread(COST, WAIT_TIME) %>% 
-  as.matrix()
-
-rownames(r) <- r[,1]
-r <- r[,-1]
-RUSH <- data2$title[match(colnames(r), movies$movieId)]
-
-i <- grep("Godfather, The", movie_titles)
-j <- grep("Goodf", movie_titles)
-qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
-
-i <- grep("Pretty Woman", movie_titles)
-j <- which(movie_titles == "Ghost")
-qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
-
-i <- grep("Godfather, The", movie_titles)
-j <- which(movie_titles == "Ghost")
-qplot(r[,i], r[,j], xlab = movie_titles[i], ylab = movie_titles[j])
-
-et.seed(1)
-options(digits = 2)
-Q <- matrix(c(1 , 1, 1, -1, -1), ncol=1)
-rownames(Q) <- c("Godfather1","Godfather2","Goodfellas","Pretty Woman","Ghost")
-P <- matrix(rep(c(2,0,-2), c(3,5,4)), ncol=1)
-rownames(P) <- 1:nrow(P)
-
-r <- jitter(P%*%t(Q), factor = 2)
-r %>% kable(align = "c")
-
-image(t(r))
-
-cor(r)
-
-cor(t(r))
-
-t(Q) %>% kable(aling="c")
-
 
 
