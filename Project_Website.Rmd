@@ -2,7 +2,7 @@
 title: "Project_Website"
 author: "Kara Higgins and Ray An"
 date: "November 29, 2017"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
