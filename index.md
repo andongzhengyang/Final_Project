@@ -1,5 +1,9 @@
+% Which is the better option: Uber or Lyft?
+
 R Markdown - trying to get something online
 ----------
+
+#Header 1
 
 This is an R Markdown document. Markdown is a simple formatting syntax
 for authoring HTML, PDF, and MS Word documents. For more details on
