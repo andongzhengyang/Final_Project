@@ -11,4 +11,11 @@ This project aims to determine which service, Uber or Lyft, has the cheaper pric
 ## Trying to get image to appear
 You can also embed images, for example:
 
+<img src="UberLyftLogos.png" width="200" height="200" />
+
 ![](UberLyftLogos.png)
+
+## Here is how we will include plots/images:
+
+![](Images/route_map.png)
+![](Plots/ridereq_distr.png)
