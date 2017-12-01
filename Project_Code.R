@@ -72,67 +72,75 @@ p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="
 dev.off()
 
 ##Ride request time distribution BY COLLECTOR - graph shows all-day
+png(filename="Plots/ridereq_distr_coll.png")
 p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
   ggtitle("Distribution of Ride Request Time (24 hr clock)") +
   facet_wrap(~COLLECTOR, dir="v")
-
+dev.off()
 #Ride cost - histogram
+png(filename="Plots/ridecost_distr.png")
 p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth = 2) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Cost by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Ride cost - boxplot
 # Calculate medians to label plot
 p_med_cost <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_cost=median(COST))
 # Make plot
+png(filename="Plots/ridereq_distr_boxp.png")
 p + geom_boxplot(aes(SERVICE, COST, fill=SERVICE)) +
   geom_text(data = p_med_cost, aes(x = SERVICE, y = med_cost, label = med_cost), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Total Cost by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Cost/min - histogram
+png(filename="Plots/cost_per_min.png")
 p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", binwidth=.1) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Cost/min - box plot
 # Calculate medians to label plot
 p_med_costmin <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_costmin=median(COST_PER_MIN))
 # Make plot
+png(filename="Plots/cost_per_min_boxp.png")
 p + geom_boxplot(aes(SERVICE, COST_PER_MIN, fill=SERVICE)) +
   geom_text(data = p_med_costmin, aes(x = SERVICE, y = med_costmin, label = round(med_costmin, 3)), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Wait time - histogram
+png(filename="Plots/waittime_histo.png")
 p + geom_histogram(aes(WAIT_TIME,..density.., fill=SERVICE), color="black", binwidth = 1) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Wait Time by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Total duration - histogram
+png(filename="Plots/totalduration_histo.png")
 p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Total Duration by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 #Total duration - box plot
 # Calculate medians to label plot
 p_med_dur <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_dur=median(TOTAL_DURATION))
 # Make plot
+png(filename="Plots/totalduration_boxp.png")
 p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
   geom_text(data = p_med_dur, aes(x = SERVICE, y = med_dur, label = med_dur), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Duration by Service and AM/PM Rush")+
   theme(legend.position = "none")
-
+dev.off()
 ########SPEARMAN AND MANN-WHITNEY U TEST
 
 #Spearman -> cor(x,y,method="spearman")
@@ -163,65 +171,58 @@ wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
 #######PLOTS OVER TIME:
 
 #Plot price over time AM, all days combined/stratified by day of week (5 plots)
+png(filename="Plots/price_am.png")
 data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
   facet_wrap(~DAY_OF_WK, nrow = 1) +
   ggtitle("Morning Commute Cost vs Time of Day")+
   xlab("Time of Day")+
   ylab("Cost ($)")
-
+dev.off()
 #Plot price over time PM, all days combined/stratified by day of week (5 plots)
+png(filename="Plots/price_pm.png")
 data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
   facet_wrap(~DAY_OF_WK, nrow = 1) +
   ggtitle("Evening Commute Cost vs Time of Day")+
   xlab("Time of Day")+
   ylab("Cost ($)")
-
+dev.off()
 #Plot average price in 15 min increments, AM
+png(filename="Plots/pricein15min.png")
 data2 %>% 
   group_by(inc=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), seq(17,19,.25)))) %>%
   summarize(mean=mean(COST)) %>%
   ggplot()+geom_col(aes(inc, mean))
-
+dev.off()
 #Plot of cost vs total duration, color by service
+png(filename="Plots/cost_totalduration.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
   ggtitle("Cost vs Total Duration") +
   xlab("Cost ($)")+
   ylab("Total Duration")
-
+dev.off()
 #Plot of cost vs total duration, color by total duration
+png(filename="Plots/cost_totaldur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(abs(TIME_FROM_MID))))+
   ggtitle("Cost vs Total Duration") +
   xlab("Cost ($)")+
   ylab("Total Duration")+
   facet_wrap(~AM_PM)
+dev.off()
 
+png(filename="Plots/cost_dur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
   facet_grid(AM_PM~.)
-
+dev.off()
 #AM only
+png(filename="Plots/am_cost.png")
 data2 %>% filter(AM_PM=="AM") %>% ggplot() +
   geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
-
+dev.off()
 #PM only
+png(filename="Plots/pm_cost.png")
 data2 %>% filter(AM_PM=="PM") %>% ggplot() +
   geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
-
-
-#### Ray look through this and clean it
-###################################################
-
-
-data2 %>% ggplot(aes(x = TOTAL_DURATION, y = COST, label = DATETIME)) +  
-  geom_abline(intercept = log10(data2$COST_PER_MIN), lty=2, col="darkgrey") +
-  geom_point(aes(color=WAIT_TIME), size = 3) +
-  geom_text_repel() + 
-  scale_x_log10() +
-  scale_y_log10() +
-  xlab("TOTAL DUATION  (log scale)") + 
-  ylab("COST of service (log scale)") +
-  ggtitle("COST of service with TOTAL DURATION") +
-  scale_color_discrete(name="WAIT_TIME") +
-  theme_economist()
+dev.off()
 
 
 
@@ -246,6 +247,9 @@ library(maps)
 library(mapdata)
 library(RColorBrewer)
 library(ggrepel)
+library(tidyverse)
+library(maps)
+library(geosphere)
 
 
 
@@ -267,54 +271,10 @@ ggmap(my_map) +
 dev.off()
 
 
-bostonMap <- qmap("boston", zoom = 12)  #First, get a map of Boston
-#Combine to form one dataset
-vand <- geocode("107 Avenue Louis Pasteur Boston, MA 02115")
-vand
-widener <- geocode("1 Harvard Yard Cambridge, MA 02138")
-widener
-
-#Need to pull X and Y from a dataset of longitude and latitude if we want multiple points
-start<- bostonMap+
-  geom_point(aes(x = vand$lon, y = vand$lat), data = data2, size=6) ##This adds the points to it
-
-start
-
-
-
-end<- bostonMap+
-  geom_point(aes(x = widener$lon, y = widener$lat), data = data2, size=6) ##This adds the points to it
-
-end
-
-
-library(tidyverse)
-library(maps)
-library(geosphere)
-
-
-start <- c(-71.10388 , 42.33746)
-end <- c(-71.11625 , 42.37492)
-data3=rbind(start, end) %>% as.data.frame()
-colnames(data3)=c("long","lat")
 
 
 
 
-
-
-
-library(ggmap)
-
-route_df <- route(from = "107 Avenue Louis Pasteur Boston, MA 02115",
-                  to = "1 Harvard Yard Cambridge, MA 02138",
-                  structure = "route")
-
-my_map <- get_map("107 Avenue Louis Pasteur Boston, MA 02115", zoom = 13)
-
-ggmap(my_map) +
-  geom_path(aes(x = lon, y = lat), color = "red", size = 1.5,
-            data = route_df, lineend = "round")
 
 
 
