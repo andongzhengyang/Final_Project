@@ -17,6 +17,11 @@ data_location <- "C:/Users/kara.THETA_HQ/Documents/Harvard/Classes/Fall 2017/BST
 
 data <- read.csv(data_location, stringsAsFactors = F)
 
+
+
+data_location <- "~/Desktop/R programming/uberlyft260final/FREEZE_13NOV2017.csv"
+data <- read.csv(data_location, stringsAsFactors = F)
+
 #STEP 1
 #Get data in correct format - specs are as follows: RAY will send to Kara by Sunday
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
@@ -58,11 +63,13 @@ summary(data2)
 #Variables to get stats on: TIME, COST, WAIT_TIME, TOTAL_DURATION, COST_PER_MIN
 p <- data2 %>% ggplot()
 ##Ride request time distribution - graph shows all-day
+png(filename="Plots/ridereq_distr.png")
 p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
   ggtitle("Distribution of Ride Request Time (24 hr clock)")
+dev.off()
 
 ##Ride request time distribution BY COLLECTOR - graph shows all-day
 p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
@@ -200,7 +207,7 @@ data2 %>% filter(AM_PM=="PM") %>% ggplot() +
   geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
 
 
-# Ray look through this and clean it
+#### Ray look through this and clean it
 ###################################################
 
 
@@ -244,6 +251,21 @@ library(ggrepel)
 
 devtools::install_github("hadley/ggplot2@v2.2.0")
 
+library(ggmap)
+
+route_df <- route(from = "107 Avenue Louis Pasteur Boston, MA 02115",
+                  to = "1 Harvard Yard Cambridge, MA 02138",
+                  structure = "route")
+
+my_map <- get_map("107 Avenue Louis Pasteur Boston, MA 02115", zoom = 13)
+
+#Save route map into images folder
+png(filename="Images/route_map.png")
+ggmap(my_map) +
+  geom_path(aes(x = lon, y = lat), color = "red", size = 1.5,
+            data = route_df, lineend = "round")
+dev.off()
+
 
 bostonMap <- qmap("boston", zoom = 12)  #First, get a map of Boston
 #Combine to form one dataset
@@ -253,32 +275,48 @@ widener <- geocode("1 Harvard Yard Cambridge, MA 02138")
 widener
 
 #Need to pull X and Y from a dataset of longitude and latitude if we want multiple points
-bostonMap+
+start<- bostonMap+
   geom_point(aes(x = vand$lon, y = vand$lat), data = data2, size=6) ##This adds the points to it
-dev.off()  ##This command indicates that we're done creating our plot.  It finalizes and closes the .png file.
 
-bostonMap+
+start
+
+
+
+end<- bostonMap+
   geom_point(aes(x = widener$lon, y = widener$lat), data = data2, size=6) ##This adds the points to it
-dev.off()
-#There should be a function that lets you stack these to form one dataset
 
-map <- get_map(location = 'boston', zoom = 13)
-mapPoints <- ggmap(map)
-
-mapPoints +
-  geom_point(aes(x = vand$lon, y = vand$lat), col = "orange", data = data2)
+end
 
 
-mapPoints +
-  geom_line(aes(x = vand$lon, y = vand$lat), col = "orange", data = data2)
-###heatmap
+library(tidyverse)
+library(maps)
+library(geosphere)
+
+
+start <- c(-71.10388 , 42.33746)
+end <- c(-71.11625 , 42.37492)
+data3=rbind(start, end) %>% as.data.frame()
+colnames(data3)=c("long","lat")
 
 
 
-bostonMap <- qmap("boston", zoom = 12,extent = "COST" )
-bostonMap +
-  stat_density2d(aes(x = vand$lon, y = vand$lat, fill = ..level..,alpha=..level..), bins = 10, geom = "polygon", data = data2) +
-  scale_fill_gradient(low = "black", high = "red")+
-  ggtitle("Map of Rush Hour in Boston")
+
+
+
+
+library(ggmap)
+
+route_df <- route(from = "107 Avenue Louis Pasteur Boston, MA 02115",
+                  to = "1 Harvard Yard Cambridge, MA 02138",
+                  structure = "route")
+
+my_map <- get_map("107 Avenue Louis Pasteur Boston, MA 02115", zoom = 13)
+
+ggmap(my_map) +
+  geom_path(aes(x = lon, y = lat), color = "red", size = 1.5,
+            data = route_df, lineend = "round")
+
+
+
 
 
