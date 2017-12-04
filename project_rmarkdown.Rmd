@@ -43,7 +43,7 @@ Each team member collected when they were able during each hour frame, with the 
 
 #### Sample Screenshots
 
-![](Uber_Screenshot_Resized.png) ![](Lyft_Screenshot_Resized.png)
+![](Images/Uber_Screenshot_Resized.png) ![](Images/Lyft_Screenshot_Resized.png)
 
 #### Portion of spreadsheet
 PUT head(data2) here
@@ -51,6 +51,12 @@ PUT head(data2) here
 ## Exploratory Analysis:
 
 Lots of plots and text about what we found out.
+
+The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table below 
+
+(maybe we should create a table of the variables). Probably will need to make the table within a code chunk and then print.
+Variable Name     Format    Description
+DATE              date      text...blahblah
 
 ```{r, echo=FALSE}
 #Our code here
@@ -62,8 +68,23 @@ library(ggthemes)
 library(ggrepel)
 library(dslabs)
 ds_theme_set(new="theme_classic")
-data_location <- "~/Desktop/R programming/uberlyft260final/FREEZE_13NOV2017.csv"
+data_location <- paste(getwd(),"/FREEZE_13NOV2017.csv", sep="")
 data <- read.csv(data_location, stringsAsFactors = F)
+
+#   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
+#   DAY_OF_WK: Day of week of request. Format=factor w/ 5 levels
+#   REQUEST_DATETIME: Date and time combined. Format=R date
+#   TIME: Time of request, calculated as hours/min since start of the day. Format=R time
+#   SERVICE: Uber/Lyft. Format=factor w/ 2 levels
+#   COST: Cost of ride. Format=numeric double
+#   WAIT_TIME: Estimated wait time. Format=numeric
+#   ARRIVAL_TIME: Estimated time of arrival. Format=R time (specify further)
+#   ARRIVAL_DATETIME: Combined estimated date and time of arrival. Format=R date time.
+#   TOTAL_DURATION: Estimated duration incl. wait time. Format=numeric
+#   COLLECTOR: Kara/Ray. Format=factor w/ 2 levels
+#   AM_PM: AM/PM request time. Format=Factor w/ 2 levels, need to derive\
+#   COST_PER_MIN: Cost in dollars per minute of estimated duration. Format=numeric
+#   TIME_FROM_MID: Time from midpoint of rush hour (midpoint=9am morning, 6pm evening)
 data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
                          DAY_OF_WK=factor(DAY_OF_WK, levels=c("Monday", "Tuesday", "Wednesday","Thursday","Friday")),
                          DATETIME=as.POSIXct(paste(DATE,TIME),format="%Y-%m-%d %H:%M"),
@@ -79,10 +100,18 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
 
 data2_AM <- data2 %>% filter(AM_PM=="AM")
 data2_PM <- data2 %>% filter(AM_PM=="PM")
+```
 
+Now talk about the characteristics of each variable:
+```{r}
+summary(data2) #DO SOMETHING BETTER WITH THIS
+#Idea - table for the numeric variables, table for the factor/character variables? Have things like min, max, etc.
 
-summary(data2)
-#Variables to get stats on: TIME, COST, WAIT_TIME, TOTAL_DURATION, COST_PER_MIN
+```
+
+Talk about how now we're going to make some pretty plots:
+```{r, warning=F, message=F, results='hide'}
+#Get univariate plots
 p <- data2 %>% ggplot()
 ##Ride request time distribution - graph shows all-day
 png(filename="Plots/ridereq_distr.png")
@@ -94,7 +123,7 @@ p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="
 dev.off()
 
 ```
-
+![](Plots/ridereq_distr.png)
 
 The first plot we have is the distribution of the ride request time plot. We can find that ride request time during the morning rush hour is normally distributed, but druing the night rush hour, the ride requet time varies a lot. 
 
@@ -115,7 +144,7 @@ dev.off()
 The second plot we have is the one that descirbe the ride request time distribution by collector, we can find that Ray's plot is more likly of the normally distributed, but both of them need to collect more data (after 6:30pm)druing the evening rush hour. 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=F, message=F}
 #Our code here
 
 #Ride cost - histogram
@@ -125,7 +154,6 @@ p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth 
   ggtitle("Distribution of Cost by Service and AM/PM Rush")+
   theme(legend.position = "none")
 dev.off()
-
 
 ```
 
@@ -161,7 +189,7 @@ p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", b
   theme(legend.position = "none")
 dev.off()
 ```
-
+![](Plots/cost_per_min.png)
 
 The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
 
@@ -327,7 +355,7 @@ The seventeenth plot we have is the one that describe the
 
 
 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # boston rush hour
 library(ggmap) 
 library(Rcpp)
@@ -341,7 +369,7 @@ library(tidyverse)
 library(maps)
 library(geosphere)
 
-devtools::install_github("hadley/ggplot2@v2.2.0")
+#devtools::install_github("hadley/ggplot2@v2.2.0")
 
 library(ggmap)
 
