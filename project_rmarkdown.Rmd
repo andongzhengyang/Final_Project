@@ -54,6 +54,8 @@ Lots of plots and text about what we found out.
 
 The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table below 
 
+Talk about how we had to remove rows for missing observations.
+
 (maybe we should create a table of the variables). Probably will need to make the table within a code chunk and then print.
 Variable Name     Format    Description
 DATE              date      text...blahblah
@@ -96,7 +98,8 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
                          AM_PM=as.factor(ifelse(TIME>8 & TIME<10, "AM", "PM")),
                          COST_PER_MIN=COST/as.numeric(TOTAL_DURATION),
                          TIME_FROM_MID=ifelse(AM_PM=="AM",TIME-9, TIME-18)
-                           )
+                           ) %>%
+                    filter(is.na(TIME)=="FALSE")
 
 data2_AM <- data2 %>% filter(AM_PM=="AM")
 data2_PM <- data2 %>% filter(AM_PM=="PM")
