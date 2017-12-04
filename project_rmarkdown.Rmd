@@ -309,6 +309,8 @@ data2 %>%
 dev.off()
 ```
 
+![](Plots/pricein15min.png)
+
 The twelveth plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
 
 
@@ -322,6 +324,7 @@ p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
 dev.off()
 ```
 
+![](Plots/cost_totalduration.png)
 
 The thirtennth plot we have is the one that describe the cost vs total duration by two service. 
 
@@ -336,6 +339,8 @@ p + geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(abs(TIME_FROM_MID))))+
 dev.off()
 ```
 
+![](Plots/cost_totaldur.png)
+
 The fourteenth plot we have is the one that describe the cost vs total duration by two service. 
 
 ```{r, warning=F, message=F, results='hide'}
@@ -344,6 +349,8 @@ p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
   facet_grid(AM_PM~.)
 dev.off()
 ```
+
+![](Plots/cost_dur.png)
 
 The fifteenth plot we have is the one that describe the
 
@@ -356,6 +363,7 @@ data2 %>% filter(AM_PM=="AM") %>% ggplot() +
 dev.off()
 ```
 
+![](Plots/am_cost.png)
 
 The sixteenth plot we have is the one that describe the
 
@@ -367,6 +375,7 @@ data2 %>% filter(AM_PM=="PM") %>% ggplot() +
 dev.off()
 ```
 
+![](Plots/pm_cost.png)
 
 The seventeenth plot we have is the one that describe the
 
@@ -404,6 +413,7 @@ ggmap(my_map) +
 dev.off()
 ```
 
+![](Images/route_map.png)
 
 The image we have is the one that show our start and end postion for requesting Uber and lyft for this project. 
 
