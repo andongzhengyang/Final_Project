@@ -127,7 +127,7 @@ dev.off()
 
 The first plot we have is the distribution of the ride request time plot. We can find that ride request time during the morning rush hour is normally distributed, but druing the night rush hour, the ride requet time varies a lot. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Our code here
 ##Ride request time distribution BY COLLECTOR - graph shows all-day
 png(filename="Plots/ridereq_distr_coll.png")
@@ -140,11 +140,12 @@ p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="
 dev.off()
 ```
 
+![](Plots/ridereq_distr_coll.png)
 
 The second plot we have is the one that descirbe the ride request time distribution by collector, we can find that Ray's plot is more likly of the normally distributed, but both of them need to collect more data (after 6:30pm)druing the evening rush hour. 
 
 
-```{r, echo=FALSE, warning=F, message=F}
+```{r, warning=F, message=F, results='hide'}
 #Our code here
 
 #Ride cost - histogram
@@ -157,12 +158,12 @@ dev.off()
 
 ```
 
-
+![](Plots/ridecost_distr.png)
 
 The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Ride cost - boxplot
 # Calculate medians to label plot
 p_med_cost <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_cost=median(COST))
@@ -177,10 +178,12 @@ dev.off()
 
 ```
 
+
+![](Plots/ridereq_distr_boxp.png)
 The fourth plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Cost/min - histogram
 png(filename="Plots/cost_per_min.png")
 p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", binwidth=.1) +
@@ -193,7 +196,7 @@ dev.off()
 
 The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Cost/min - box plot
 # Calculate medians to label plot
 p_med_costmin <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_costmin=median(COST_PER_MIN))
@@ -207,11 +210,13 @@ p + geom_boxplot(aes(SERVICE, COST_PER_MIN, fill=SERVICE)) +
 dev.off()
 ```
 
+![](Plots/cost_per_min_boxp.png)
+
 
 The sixth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Wait time - histogram
 png(filename="Plots/waittime_histo.png")
 p + geom_histogram(aes(WAIT_TIME,..density.., fill=SERVICE), color="black", binwidth = 1) +
@@ -222,9 +227,11 @@ dev.off()
 ```
 
 
+![](Plots/waittime_histo.png)
+
 The seventh plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Total duration - histogram
 png(filename="Plots/totalduration_histo.png")
 p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
@@ -234,10 +241,12 @@ p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black",
 dev.off()
 ```
 
+![](Plots/totalduration_histo.png)
+
 The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Total duration - box plot
 # Calculate medians to label plot
 p_med_dur <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_dur=median(TOTAL_DURATION))
@@ -252,9 +261,11 @@ dev.off()
 ```
 
 
+![](Plots/totalduration_boxp.png)
+
 The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Plot price over time AM, all days combined/stratified by day of week (5 plots)
 png(filename="Plots/price_am.png")
 data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
@@ -265,10 +276,12 @@ data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
 dev.off()
 ```
 
+![](Plots/price_am.png)
+
 
 The tenth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Plot price over time PM, all days combined/stratified by day of week (5 plots)
 png(filename="Plots/price_pm.png")
 data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
@@ -279,10 +292,11 @@ data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
 dev.off()
 ```
 
+![](Plots/price_pm.png)
 
 The evelenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Plot average price in 15 min increments, AM
 png(filename="Plots/pricein15min.png")
 data2 %>% 
@@ -295,7 +309,7 @@ dev.off()
 The twelveth plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Plot of cost vs total duration, color by service
 png(filename="Plots/cost_totalduration.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
@@ -308,7 +322,7 @@ dev.off()
 
 The thirtennth plot we have is the one that describe the cost vs total duration by two service. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #Plot of cost vs total duration, color by total duration
 png(filename="Plots/cost_totaldur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(abs(TIME_FROM_MID))))+
@@ -321,7 +335,7 @@ dev.off()
 
 The fourteenth plot we have is the one that describe the cost vs total duration by two service. 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 png(filename="Plots/cost_dur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
   facet_grid(AM_PM~.)
@@ -331,7 +345,7 @@ dev.off()
 The fifteenth plot we have is the one that describe the
 
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #AM only
 png(filename="Plots/am_cost.png")
 data2 %>% filter(AM_PM=="AM") %>% ggplot() +
@@ -342,7 +356,7 @@ dev.off()
 
 The sixteenth plot we have is the one that describe the
 
-```{r, echo=FALSE}
+```{r, warning=F, message=F, results='hide'}
 #PM only
 png(filename="Plots/pm_cost.png")
 data2 %>% filter(AM_PM=="PM") %>% ggplot() +
@@ -355,7 +369,7 @@ The seventeenth plot we have is the one that describe the
 
 
 
-```{r, eval=FALSE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE, warning=F, message=F, results='hide'}
 # boston rush hour
 library(ggmap) 
 library(Rcpp)
