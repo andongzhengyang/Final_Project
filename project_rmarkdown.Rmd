@@ -60,8 +60,7 @@ Talk about how we had to remove rows for missing observations.
 Variable Name     Format    Description
 DATE              date      text...blahblah
 
-```{r, echo=FALSE}
-#Our code here
+```{r, echo=FALSE, message=F, warning=F}
 library(tidyverse)
 library(lubridate)
 library(stringr)
@@ -70,9 +69,14 @@ library(ggthemes)
 library(ggrepel)
 library(dslabs)
 ds_theme_set(new="theme_classic")
+```
+
+```{r, message=F, warning=F}
+#Reading in data
 data_location <- paste(getwd(),"/FREEZE_FINAL_4DEC2017.csv", sep="")
 data <- read.csv(data_location, stringsAsFactors = F)
 
+#Formatting and cleaning data
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
 #   DAY_OF_WK: Day of week of request. Format=factor w/ 5 levels
 #   REQUEST_DATETIME: Date and time combined. Format=R date
@@ -113,12 +117,15 @@ summary(data2) #DO SOMETHING BETTER WITH THIS
 ```
 
 Talk about how now we're going to make some pretty plots:
+
+### Time of Ride Request
+ADD AXIS LABELS AND CENTER TITLE. MAYBE ADD COLOR.
 ```{r, warning=F, message=F, results='hide'}
 #Get univariate plots
 p <- data2 %>% ggplot()
 ##Ride request time distribution - graph shows all-day
 png(filename="Plots/ridereq_distr.png")
-p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
+p + geom_histogram(aes(as.numeric(TIME),..density..), breaks=seq(7.99,18.99,.5), color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
@@ -134,7 +141,7 @@ The first plot we have is the distribution of the ride request time plot. We can
 #Our code here
 ##Ride request time distribution BY COLLECTOR - graph shows all-day
 png(filename="Plots/ridereq_distr_coll.png")
-p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(8,19,.5),color="black") +
+p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(7.99,18.99,.5),color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
@@ -147,7 +154,11 @@ dev.off()
 
 The second plot we have is the one that descirbe the ride request time distribution by collector, we can find that Ray's plot is more likly of the normally distributed, but both of them need to collect more data (after 6:30pm)druing the evening rush hour. 
 
+### Cost
 
+See if we can put cost histogram next to cost/min histogram. Then same for the boxplots. We can just put the image links in the markdown next to each other.
+
+For the ride cost histogram, talk about the skew and how we noticed that this would limit the types of analyses we could do. Skew makes sense, right.
 ```{r, warning=F, message=F, results='hide'}
 #Our code here
 
@@ -298,6 +309,9 @@ dev.off()
 ![](Plots/price_pm.png)
 
 The evelenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
+
+ROTATE X AXIS LABELS, ADD TITLE
+MAKE ANOTHER ONE STRATIFIED BY SERVICE
 
 ```{r, warning=F, message=F, results='hide'}
 #Plot average price in 15 min increments, AM
