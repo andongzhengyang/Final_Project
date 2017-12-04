@@ -68,7 +68,7 @@ library(ggthemes)
 library(ggrepel)
 library(dslabs)
 ds_theme_set(new="theme_classic")
-data_location <- paste(getwd(),"/FREEZE_13NOV2017.csv", sep="")
+data_location <- paste(getwd(),"/FREEZE_FINAL_4DEC2017.csv", sep="")
 data <- read.csv(data_location, stringsAsFactors = F)
 
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
