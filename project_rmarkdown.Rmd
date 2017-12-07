@@ -1,7 +1,6 @@
 ---
-title: "Project_Website"
+title: "Uber or Lyft: Which is the Better Option from Longwood to Harvard Square?"
 author: "Kara Higgins and Ray An"
-date: "November 29, 2017"
 output: html_document
 ---
 
@@ -9,29 +8,49 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, fig.align ="center")
 ```
 
-## Overview & Motivation
+```{r, echo=FALSE, message=F, warning=F}
+library(knitr)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(ggplot2)
+library(ggthemes)
+library(ggrepel)
+library(dslabs)
+library(Hmisc)
+library(qwraps2)
+ds_theme_set(new="theme_classic")
+```
 
 <img src="Images/UberLyftLogos_Smaller.jpg" alt="logos">
 
+
+## Overview & Motivation
+
+<img src="Images/UberLyftGoogleMap.jpg" align="right">
 The Harvard T.H. Chan School of Public Health is located in the Longwood Medical area in Boston, while the main Harvard University campus is located in Cambridge. Many Harvard Chan students, staff, and faculty choose to live in Cambridge, and others cross-register for classes or attend events that are offered on the main campus. Thus, there is a need to determine the most cost-effective and efficient commute option between the two campuses, especially during rush-hour periods. The M2 shuttle provides a free option but can be unreliable, crowded, inflexible due to its set schedule, and takes an inefficient route in order to stop at popular locations along Massachusetts Avenue. The MBTA offers several routes that are also inefficient and can experience heavy traffic. A better option may be travel by car.
 
 Taking Uber or Lyft may save time that could better be spent studying or working, especially if we can determine the best time to travel and the best service to use in order to get a good price. 
 
 ## Background
 
-ASSIGN TO SOMEONE FOR THE WEEKEND
+There are dozens of online resources that compare different aspects of Uber, Lyft, and sometimes taxi services. Some interesting examples are:
 
-We are going to talk about what other datasets or studies we looked at. We may also want to include information about how the Uber/Lyft algorithms work. We should be able to find this online.
+* This article by [RideGuru](https://ride.guru/content/newsroom/uber-vs-lyft-vs-taxi-cost-analysis-across-the-united-states) shows a side-by-side price comparison of all three services in Boston and compares the Boston prices for a 4-mile ride to prices in other cities around the U.S. The figure on the website shows that Lyft was slightly cheaper in Boston, based on the data they gathered. 
+* Another article by [Alvia](http://www.alvia.com/lyft-vs-uber/) presents an estimate of the pricing algorithms for each service. It says that Uber fares are generally cheaper nationwide, but the price comparison is dependent on location and whether there is a surge.
+* Finally, [FareEstimate.com](http://www.fareestimate.com/) is a website where users can input a pickup and dropoff location and instantly view a price comparison of all Uber and Lyft services.
+
+Both the [Uber](https://help.uber.com/h/d2d43bbc-f4bb-4882-b8bb-4bd8acf03a9d) and [Lyft](https://help.lyft.com/hc/en-us/articles/214218147-How-to-calculate-a-Lyft-ride-s-cost) websites are vague about their pricing algorithm, which seems to be partially due to the new upfront pricing feature in both apps, as well as possible pricing differences by city.
 
 ## Initial Questions
 
-Our primary objective was to figure out which ride service, Uber or Lyft, was a better option for traveling from the Longwood campus to the Cambridge campus. Through data visualization, we hoped to establish a guide for when to take which service. The following research questions guided our project:
+Our primary objective was to determine which ride service, Uber or Lyft, was a better option for traveling the 4.7 miles by car from the Longwood campus to the Cambridge campus during the morning (8-10am) and evening (5-7pm) rush hour periods. Through data visualization, we hoped to establish a guide for when to take each service. The following research questions guided our project:
 
-* Which service is cheaper overall?
-* Did ride prices vary in a similar way between services over different times?
-* Which service is preferable during morning vs. evening rush hour?
-* Which service has a long wait time and/or expectated time to destination?
-* How does the cost/minute compare for each service?
+* Which service is cheaper overall for our chosen route?
+* What do the time of day/day of week trends in fares look like for each service?
+* Which service is preferable based on cost and wait time during morning and evening rush hour?
+* Which service has a shorter wait time and/or expectated time to destination?
+* How does the cost per expected minute of travel compare for each service?
 
 ## Data Collection & Cleaning
 
@@ -39,14 +58,20 @@ After checking the Uber and Lyft online dataset, they did not provide any price 
 
 We decided to collect the data ourselves. The 4-week collection period ran Monday-Friday from November 6 - December 1. We aimed to collect a total of 16 data points each day (8 Uber/Lyft pairs) for a total goal of 320 data points. Each team member used screenshots on his/her phone to collect the data each day: 1 Uber observation and 1 Lyft observation at random times between 8-9am, 9-10am, 5-6pm, and 6-7pm.
 
-Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall to Widener Gate. Then, we took a screenshot of the estimated price, wait time, and duration time. and later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the spreadsheet can be found below:
+Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall to Widener Gate. Then, we took a screenshot of the estimated price, wait time, and duration time. and later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the data collection spreadsheet can be found below:
 
 #### Sample Screenshots
 
 ![](Images/Uber_Screenshot_Resized.png) ![](Images/Lyft_Screenshot_Resized.png)
 
-#### Portion of spreadsheet
-PUT head(data2) here
+#### Data Collection Spreadsheet
+
+```{r, echo=F, message=F, warning=F}
+#Reading in data
+data_location <- paste(getwd(),"/FREEZE_FINAL_4DEC2017.csv", sep="")
+data <- read.csv(data_location, stringsAsFactors = F)
+head(data) %>% kable(align='c')
+```
 
 ## Exploratory Analysis:
 
@@ -60,21 +85,7 @@ Talk about how we had to remove rows for missing observations.
 Variable Name     Format    Description
 DATE              date      text...blahblah
 
-```{r, echo=FALSE, message=F, warning=F}
-library(tidyverse)
-library(lubridate)
-library(stringr)
-library(ggplot2)
-library(ggthemes)
-library(ggrepel)
-library(dslabs)
-ds_theme_set(new="theme_classic")
-```
-
-```{r, message=F, warning=F}
-#Reading in data
-data_location <- paste(getwd(),"/FREEZE_FINAL_4DEC2017.csv", sep="")
-data <- read.csv(data_location, stringsAsFactors = F)
+```{r, echo=F, message=F}
 
 #Formatting and cleaning data
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
@@ -111,8 +122,29 @@ data2_PM <- data2 %>% filter(AM_PM=="PM")
 
 Now talk about the characteristics of each variable:
 ```{r}
-summary(data2) #DO SOMETHING BETTER WITH THIS
+#summary(data2) #DO SOMETHING BETTER WITH THIS
 #Idea - table for the numeric variables, table for the factor/character variables? Have things like min, max, etc.
+
+summary_tbl <- 
+  list("Cost" = 
+       list("min" = ~ min(COST), 
+            "max" = ~ max(COST),
+            "mean (sd)" = ~ qwraps2::mean_sd(COST)),
+       "Wait Time" = 
+       list("min" = ~ min(WAIT_TIME), 
+            "max" = ~ max(WAIT_TIME),
+            "mean (sd)" = ~ qwraps2::mean_sd(WAIT_TIME)),
+       "Total Duration" = 
+       list("min" = ~ min(TOTAL_DURATION), 
+            "max" = ~ max(TOTAL_DURATION),
+            "mean (sd)" = ~ qwraps2::mean_sd(TOTAL_DURATION)),
+       "Day of Week" = 
+       list("Monday" = ~ qwraps2::n_perc0(DAY_OF_WK == "Monday"),
+            "Tuesday"  = ~ qwraps2::n_perc0(DAY_OF_WK == "Tuesday"),
+            "Wednesday"  = ~ qwraps2::n_perc0(DAY_OF_WK == "Wednesday"))
+       ) 
+
+summary_table(data2,summary_tbl)
 
 ```
 
@@ -313,7 +345,8 @@ The evelenth plot we have is the one that compare the price for two service duri
 ROTATE X AXIS LABELS, ADD TITLE
 MAKE ANOTHER ONE STRATIFIED BY SERVICE
 
-```{r, warning=F, message=F, results='hide'}
+```{r, warning=F, message=F, results='hide', eval=F}
+library(dplyr)
 #Plot average price in 15 min increments, AM
 png(filename="Plots/pricein15min.png")
 data2 %>% 
