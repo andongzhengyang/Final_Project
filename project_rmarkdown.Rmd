@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.align ="center")
+knitr::opts_chunk$set(echo = F)
 ```
 
 ```{r, echo=FALSE, message=F, warning=F}
@@ -17,8 +17,7 @@ library(ggplot2)
 library(ggthemes)
 library(ggrepel)
 library(dslabs)
-library(Hmisc)
-library(qwraps2)
+library(lubridate)
 ds_theme_set(new="theme_classic")
 ```
 
@@ -44,7 +43,7 @@ Both the [Uber](https://help.uber.com/h/d2d43bbc-f4bb-4882-b8bb-4bd8acf03a9d) an
 
 ## Initial Questions
 
-Our primary objective was to determine which ride service, Uber or Lyft, was a better option for traveling the 4.7 miles by car from the Longwood campus to the Cambridge campus during the morning (8-10am) and evening (5-7pm) rush hour periods. Through data visualization, we hoped to establish a guide for when to take each service. The following research questions guided our project:
+Our primary objective was to determine which ride service, UberX or Lyft (standard car service, not LyftLine), was a better option for traveling the 4.7 miles by car from the Longwood campus to the Cambridge campus during the morning (8-10am) and evening (5-7pm) rush hour periods. Through data visualization, we hoped to establish a guide for when to take each service. The following research questions guided our project:
 
 * Which service is cheaper overall for our chosen route?
 * What do the time of day/day of week trends in fares look like for each service?
@@ -52,19 +51,22 @@ Our primary objective was to determine which ride service, Uber or Lyft, was a b
 * Which service has a shorter wait time and/or expectated time to destination?
 * How does the cost per expected minute of travel compare for each service?
 
-## Data Collection & Cleaning
+## The Data
 
 After checking the Uber and Lyft online dataset, they did not provide any price data, so we decided to create our own dataset.
 
 We decided to collect the data ourselves. The 4-week collection period ran Monday-Friday from November 6 - December 1. We aimed to collect a total of 16 data points each day (8 Uber/Lyft pairs) for a total goal of 320 data points. Each team member used screenshots on his/her phone to collect the data each day: 1 Uber observation and 1 Lyft observation at random times between 8-9am, 9-10am, 5-6pm, and 6-7pm.
 
-Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall to Widener Gate. Then, we took a screenshot of the estimated price, wait time, and duration time. and later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the data collection spreadsheet can be found below:
+Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall to Widener Gate. Then, we took a screenshot of the estimated price, wait time, and duration time for a standard ride (not "Pool" or "Line"). Later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the data collection spreadsheet can be found below:
 
-#### Sample Screenshots
+### Sample Screenshots
 
 ![](Images/Uber_Screenshot_Resized.png) ![](Images/Lyft_Screenshot_Resized.png)
 
-#### Data Collection Spreadsheet
+
+### Data Collection Spreadsheet
+
+Below is the first portion our our data collection spreadsheet, to give an idea of how we collected data. Variable descriptions are provided later on.
 
 ```{r, echo=F, message=F, warning=F}
 #Reading in data
@@ -73,20 +75,13 @@ data <- read.csv(data_location, stringsAsFactors = F)
 head(data) %>% kable(align='c')
 ```
 
-## Exploratory Analysis:
+### Data Cleaning and Formatting
 
-Lots of plots and text about what we found out.
+The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table following the code.
 
-The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table below 
+There were 6 scheduled observation times for which data for both Uber and Lyft was not collected. We assumed that those were missing completely at random and removed them from the dataset. The only other missing data point was the arrival time (and therefore duration and cost/minute) for a Lyft data point between 8-9am on November 16. This happened because a screenshot was taken before the app displayed the estimated arrival time. We assumed this was also random and removed this observation. The resulting dataset has 313 observations.
 
-Talk about how we had to remove rows for missing observations.
-
-(maybe we should create a table of the variables). Probably will need to make the table within a code chunk and then print.
-Variable Name     Format    Description
-DATE              date      text...blahblah
-
-```{r, echo=F, message=F}
-
+```{r, echo=T, message=F}
 #Formatting and cleaning data
 #   DATE: Date of request. Format=date (need to specify further based on R formats avail.)
 #   DAY_OF_WK: Day of week of request. Format=factor w/ 5 levels
@@ -101,9 +96,13 @@ DATE              date      text...blahblah
 #   COLLECTOR: Kara/Ray. Format=factor w/ 2 levels
 #   AM_PM: AM/PM request time. Format=Factor w/ 2 levels, need to derive\
 #   COST_PER_MIN: Cost in dollars per minute of estimated duration. Format=numeric
-#   TIME_FROM_MID: Time from midpoint of rush hour (midpoint=9am morning, 6pm evening)
-data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
-                         DAY_OF_WK=factor(DAY_OF_WK, levels=c("Monday", "Tuesday", "Wednesday","Thursday","Friday")),
+#   TIME_FROM_MID: Absolute value of time from our defined midpoint of rush hour (midpoint=9am morning, 6pm evening)
+data2 <- data %>% mutate(DATE=mdy(DATE),
+                         DAY_OF_WK=factor(DAY_OF_WK, levels=c("Monday", 
+                                                              "Tuesday", 
+                                                              "Wednesday",
+                                                              "Thursday",
+                                                              "Friday")),
                          DATETIME=as.POSIXct(paste(DATE,TIME),format="%Y-%m-%d %H:%M"),
                          TIME=DATETIME-as.POSIXct(paste(DATE,"00:00:00"), format="%Y-%m-%d %H:%M"),
                          SERVICE=as.factor(SERVICE),
@@ -112,40 +111,92 @@ data2 <- data %>% mutate(DATE=as.Date(DATE, format="%m/%d/%Y"),
                          COLLECTOR=as.factor(COLLECTOR),
                          AM_PM=as.factor(ifelse(TIME>8 & TIME<10, "AM", "PM")),
                          COST_PER_MIN=COST/as.numeric(TOTAL_DURATION),
-                         TIME_FROM_MID=ifelse(AM_PM=="AM",TIME-9, TIME-18)
+                         TIME_FROM_MID=ifelse(AM_PM=="AM",abs(TIME-9), abs(TIME-18))
                            ) %>%
-                    filter(is.na(TIME)=="FALSE")
+                    filter(is.na(ARRIVAL_TIME)=="FALSE")
 
 data2_AM <- data2 %>% filter(AM_PM=="AM")
 data2_PM <- data2 %>% filter(AM_PM=="PM")
 ```
 
-Now talk about the characteristics of each variable:
-```{r}
-#summary(data2) #DO SOMETHING BETTER WITH THIS
-#Idea - table for the numeric variables, table for the factor/character variables? Have things like min, max, etc.
+### Variable Specifications
 
-summary_tbl <- 
-  list("Cost" = 
-       list("min" = ~ min(COST), 
-            "max" = ~ max(COST),
-            "mean (sd)" = ~ qwraps2::mean_sd(COST)),
-       "Wait Time" = 
-       list("min" = ~ min(WAIT_TIME), 
-            "max" = ~ max(WAIT_TIME),
-            "mean (sd)" = ~ qwraps2::mean_sd(WAIT_TIME)),
-       "Total Duration" = 
-       list("min" = ~ min(TOTAL_DURATION), 
-            "max" = ~ max(TOTAL_DURATION),
-            "mean (sd)" = ~ qwraps2::mean_sd(TOTAL_DURATION)),
-       "Day of Week" = 
-       list("Monday" = ~ qwraps2::n_perc0(DAY_OF_WK == "Monday"),
-            "Tuesday"  = ~ qwraps2::n_perc0(DAY_OF_WK == "Tuesday"),
-            "Wednesday"  = ~ qwraps2::n_perc0(DAY_OF_WK == "Wednesday"))
-       ) 
+```{r, message=F}
+#FILL IN THE REST OF THE VALUES LATER
+Variable <- names(data2)
+Description <- c("Date of Request: mm-dd-yyyy", 
+                 "Day of Week of Request: Monday-Friday",
+                 "Time of Request (24 hour clock), measured as a difference from midnight",
+                 "Car Service: Uber or Lyft",
+                 "Total fare for ride ($)",
+                 "Estimated wait time (minutes)",
+                 "Estimated arrival time (24 hour clock), measured as a difference from midnight",
+                 "Estimated total duration, including wait time (minutes) = ARRIVAL_TIME-TIME",
+                 "Person who collected the data: Kara or Ray",
+                 "Date and time of ride request",
+                 "Date and time of expected arrival",
+                 "Denotes whether ride was during morning/evening: AM or PM",
+                 "Estimated cost per minute = COST/TOTAL_DURATION",
+                 "Absolute time difference of request from midpoint of rush hour (9am or 6pm)")
+                 
+Format <- c("Date", "Factor", "Time Difference", "Factor",
+            "Numeric", "Integer", "Time Difference", "Integer",
+            "Factor", "Date", "Date", "Factor", "Numeric", "Numeric")
+var_table <- data.frame(cbind(Variable, Format, Description))
+var_table %>% kable(align='l')
+```
 
-summary_table(data2,summary_tbl)
+## Exploratory Analysis
 
+### Univariate Statistics
+
+We used the `summary` function to examine the values of the data and ensure that none of our observations required examination to ensure that the reporting was accurate. After inspection, nothing seemed out of expected range, and we concluded that we could proceed.
+
+```{r, echo=F, message=F}
+summary(data2)
+```
+
+Because the output of the summary function is not in the clearest format and does not include standard deviation, we also wrote a function to produce a table of univariate statistics for our numeric variables.
+
+```{r, echo=F, message=F}
+numeric_summary <- function(variable){
+  stats <- c("N", "Mean (SD)", "Median", "Min, Max")
+  n <- as.character(length(variable))
+  mean <- as.character(round(mean(variable),1))
+  sd <- as.character(round(sd(variable),2))
+  med <- as.character(round(median(variable),1))
+  min <- as.character(min(variable))
+  max <- as.character(max(variable))
+  values <- c(n, 
+              paste(mean, " (", sd, ")", sep=""),
+              med, 
+              paste(min, ", ", max, sep=""))
+  output <- (cbind(stats,values))
+  return(output)
+}
+
+cost_head <- c("Total Cost ($)", " ")
+cost_stats <- numeric_summary(data2$COST)
+wait_head <- c("Estimated Wait Time (min)", " ")
+wait_stats <- numeric_summary(data2$WAIT_TIME)
+dur_head <- c("Estimated Duration (min)", " ")
+dur_stats <- numeric_summary(data2$TOTAL_DURATION)
+cpm_head <- c("Cost per Minute ($)", " ")
+cpm_stats <- numeric_summary(data2$COST_PER_MIN)
+tfm_head <- c("Absolute Time from Rush Hour Midpoint (min)", " ")
+tfm_stats <- numeric_summary(data2$TIME_FROM_MID)
+empty <- c(" "," ")
+
+numeric_smry_table <- rbind(cost_head, cost_stats,
+                            wait_head, wait_stats,
+                            dur_head, dur_stats,
+                            cpm_head, cpm_stats,
+                            tfm_head, tfm_stats)
+rownames(numeric_smry_table) <- seq(1:dim(numeric_smry_table)[1])
+colnames(numeric_smry_table) <- c("Statistic", "Value")
+numeric_smry_table2 <- data.frame(numeric_smry_table)
+
+numeric_smry_table2 %>% kable(align='l')
 ```
 
 Talk about how now we're going to make some pretty plots:
@@ -214,7 +265,7 @@ The third plot we have is the distribution of cost by two service druing morning
 # Calculate medians to label plot
 p_med_cost <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_cost=median(COST))
 # Make plot
-png(filename="Plots/ridereq_distr_boxp.png")
+png(filename="Plots/ridecost_distr_boxp.png")
 p + geom_boxplot(aes(SERVICE, COST, fill=SERVICE)) +
   geom_text(data = p_med_cost, aes(x = SERVICE, y = med_cost, label = med_cost), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
@@ -225,7 +276,7 @@ dev.off()
 ```
 
 
-![](Plots/ridereq_distr_boxp.png)
+![](Plots/ridecost_distr_boxp.png)
 The fourth plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
 
 
