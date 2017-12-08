@@ -50,11 +50,7 @@ Each team member collected when they were able during each hour frame, with the 
 
 
 
-## Start and End point on Google map for our project
 
-The image we have is the one that show our start and end postion for requesting Uber and lyft for this project. 
-
-![](Images/route_map.png)
 ## Exploratory Analysis:
 
 Lots of plots and text about what we found out.
@@ -96,18 +92,20 @@ The sixth plot we have is the one that descirbe that the distribution of cost pe
 
 The seventh plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
 
+The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
+
 
 ![](Plots/waittime_histo.png)
 
 
 The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
 
+The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber.
+
 ![](Plots/totalduration_histo.png)
-
-
-The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber. 
-
 ![](Plots/totalduration_boxp.png)
+
+
 
 
 The tenth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
@@ -132,9 +130,6 @@ The thirtennth plot we have is the one that describe the cost vs total duration 
 ![](Plots/cost_totalduration.png)
 
 
-The fourteenth plot we have is the one that describe the cost vs total duration by two service. 
-
-![](Plots/cost_totaldur.png)
 
 
 The fifteenth plot we have is the one that describe the
@@ -142,14 +137,7 @@ The fifteenth plot we have is the one that describe the
 ![](Plots/cost_dur.png)
 
 
-The sixteenth plot we have is the one that describe the
 
-![](Plots/am_cost.png)
-
-
-The seventeenth plot we have is the one that describe the
-
-![](Plots/pm_cost.png)
 
 
 
