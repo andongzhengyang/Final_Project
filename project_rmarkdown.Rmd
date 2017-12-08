@@ -255,8 +255,6 @@ dev.off()
 
 ```
 
-![](Plots/ridecost_distr.png)
-
 The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
 
 
@@ -276,7 +274,8 @@ dev.off()
 ```
 
 
-![](Plots/ridecost_distr_boxp.png)
+![](Plots/ridecost_distr.png) ![](Plots/ridecost_distr_boxp.png)
+
 The fourth plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
 
 
@@ -289,7 +288,7 @@ p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", b
   theme(legend.position = "none")
 dev.off()
 ```
-![](Plots/cost_per_min.png)
+
 
 The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
 
@@ -307,7 +306,7 @@ p + geom_boxplot(aes(SERVICE, COST_PER_MIN, fill=SERVICE)) +
 dev.off()
 ```
 
-![](Plots/cost_per_min_boxp.png)
+![](Plots/cost_per_min.png) ![](Plots/cost_per_min_boxp.png)
 
 
 The sixth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
@@ -338,7 +337,6 @@ p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black",
 dev.off()
 ```
 
-![](Plots/totalduration_histo.png)
 
 The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
 
@@ -358,7 +356,7 @@ dev.off()
 ```
 
 
-![](Plots/totalduration_boxp.png)
+![](Plots/totalduration_histo.png) ![](Plots/totalduration_boxp.png)
 
 The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber. 
 
@@ -372,8 +370,6 @@ data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
   ylab("Cost ($)")
 dev.off()
 ```
-
-![](Plots/price_am.png)
 
 
 The tenth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
@@ -389,7 +385,7 @@ data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
 dev.off()
 ```
 
-![](Plots/price_pm.png)
+![](Plots/price_am.png) ![](Plots/price_pm.png)
 
 The evelenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
 
@@ -409,8 +405,7 @@ dev.off()
 
 ![](Plots/pricein15min.png)
 
-The twelveth plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
-
+The twelveth plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour.
 
 ```{r, warning=F, message=F, results='hide'}
 #Plot of cost vs total duration, color by service
@@ -422,22 +417,7 @@ p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
 dev.off()
 ```
 
-![](Plots/cost_totalduration.png)
-
-The thirtennth plot we have is the one that describe the cost vs total duration by two service. 
-
-```{r, warning=F, message=F, results='hide'}
-#Plot of cost vs total duration, color by total duration
-png(filename="Plots/cost_totaldur.png")
-p + geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(abs(TIME_FROM_MID))))+
-  ggtitle("Cost vs Total Duration") +
-  xlab("Cost ($)")+
-  ylab("Total Duration")+
-  facet_wrap(~AM_PM)
-dev.off()
-```
-
-![](Plots/cost_totaldur.png)
+![](Plots/cost_totalduration.png
 
 The fourteenth plot we have is the one that describe the cost vs total duration by two service. 
 
@@ -450,70 +430,8 @@ dev.off()
 
 ![](Plots/cost_dur.png)
 
-The fifteenth plot we have is the one that describe the
-
-
-```{r, warning=F, message=F, results='hide'}
-#AM only
-png(filename="Plots/am_cost.png")
-data2 %>% filter(AM_PM=="AM") %>% ggplot() +
-  geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
-dev.off()
-```
-
-![](Plots/am_cost.png)
-
-The sixteenth plot we have is the one that describe the
-
-```{r, warning=F, message=F, results='hide'}
-#PM only
-png(filename="Plots/pm_cost.png")
-data2 %>% filter(AM_PM=="PM") %>% ggplot() +
-  geom_point(aes(TOTAL_DURATION, COST, color=as.numeric(TIME), shape=SERVICE))
-dev.off()
-```
-
-![](Plots/pm_cost.png)
 
 The seventeenth plot we have is the one that describe the
-
-
-
-```{r, eval=FALSE, echo=FALSE, warning=F, message=F, results='hide'}
-# boston rush hour
-library(ggmap) 
-library(Rcpp)
-library(sp)
-library(ggplot2)
-library(maps)
-library(mapdata)
-library(RColorBrewer)
-library(ggrepel)
-library(tidyverse)
-library(maps)
-library(geosphere)
-
-#devtools::install_github("hadley/ggplot2@v2.2.0")
-
-library(ggmap)
-
-route_df <- route(from = "107 Avenue Louis Pasteur Boston, MA 02115",
-                  to = "1 Harvard Yard Cambridge, MA 02138",
-                  structure = "route")
-
-my_map <- get_map("107 Avenue Louis Pasteur Boston, MA 02115", zoom = 13)
-
-#Save route map into images folder
-png(filename="Images/route_map.png")
-ggmap(my_map) +
-  geom_path(aes(x = lon, y = lat), color = "red", size = 1.5,
-            data = route_df, lineend = "round")
-dev.off()
-```
-
-![](Images/route_map.png)
-
-The image we have is the one that show our start and end postion for requesting Uber and lyft for this project. 
 
 #Final Analysis
 
