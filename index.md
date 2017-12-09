@@ -53,111 +53,108 @@ Each team member collected when they were able during each hour frame, with the 
 
 
 
-The first plot we have is the distribution of the ride request time plot. We can find that ride request time during the morning rush hour is normally distributed, but druing the night rush hour, the ride requet time varies a lot. 
+### Univariate Plots
+
+#### Time of Ride Request
+
+The histogram below shows the distribution of the ride request times, with dotted lines representing the rush hour windows that we defined. As you can see, all rides were requested within the window. We hoped to request at random times within each window, which would result in a flat distribution across each window. The distribution is not perfectly flat, but it also doesn't look to have an obvious or concerning shape. The differences are likely due to a tendency to request within the first half of each hour so we did not forget.
+
 
 ![](Plots/ridereq_distr.png)
 
 
+#### Cost
 
+The most immediately noticeable characteristic of the cost distribution is the strong right skew. This skew makes sense, given that most of the time, the cost of a ride will be somewhere around $15. However, when there is a surge, the cost of a ride can soar, resulting in the skewing of the right tail. Noting this skew of the data will be important when we perform statistical analyses.
 
-
-The second plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
-
-The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
+The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, the two service look kind of similar, with Lyft still a little bit cheaper than Uber.
 
 ![](Plots/ridecost_distr.png) ![](Plots/ridecost_distr_boxp.png)
 
 
+#### Total Duration
 
+The histogram of total duration we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hours. We can see clearly, during the morning rush hour, both of the Lyft and Uber's total duration is right skew, but during the evening rush hour, both of the Lyft and Uber's total duration looks normally distributed. 
 
+The boxplot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the mean of the total duration of Lyft is same with uber, but overall Uber takes less total duration time than Lyft. During the evening rush hour, the mean of the total duration of Lyft is shorter than Uber, overall Lyft takes less total duration time than Uber, this is oppsite with the morning rush hour result. 
 
-
-
-The fourth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
-
-The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
-
-
-![](Plots/cost_per_min.png) ![](Plots/cost_per_min_boxp.png)
-
-
-
-
-
-The sixth plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
-
-
-
-
-![](Plots/waittime_histo.png)
-
-
-The seventh plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
-
-The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber.
 
 ![](Plots/totalduration_histo.png) ![](Plots/totalduration_boxp.png)
 
+#### Wait Time
+
+The histogram plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour. As we can saw from the plot, during the morning rush hour, the distribution of wait time for Lyft and uber are all right skew. During the evening rush hour, the distribution of wait time for Lyft is normally distributed, but the distribution of wait time for  uber is still right skew. 
+
+![](Plots/waittime_histo.png)
+
+### Multivariate Plots
 
 
+#### Cost druing morning rush hour
 
+The plot we have below is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. But for both of Lyft and uber, they did have some higher price outliers.
 
+![](Plots/price_am.png) 
 
-The nighth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
+#### Cost during evening rush hour
 
-![](Plots/price_am.png)
-
-
-The tenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
+The plot we have below is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. We can the cost of lyft and uber is kind of mixed with each other. However, we can still see the bottome line (lower cost) in thsi plot still shows that Lyft have a lower price. 
 
 ![](Plots/price_pm.png)
 
+#Final Analysis
+
+In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
+
+## Service vs Cost
+
+The plot we have below is the one that describe the cost vs total duration by two service. We can see from the plot that Uber has several highest cost outliers compared with Lyft. Overall lyft has a lower price than uber. 
+
+![](Plots/cost_totalduration.png
 
 
-The eleventh plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
-
-![](Plots/pricein15min.png)
-
-
-The twelveth plot we have is the one that describe the cost vs total duration by two service. 
-
-
-![](Plots/cost_totalduration.png)
-
-
-
-
-The thirteenth plot we have is the one that describe the cost vs total duration by two service. 
+The plot we have below is the one that describe the cost vs total duration by two service. We use morning and evening rush hour to better interpret the trand of cost for two service. This plot also shows that Uber has several highest cost outliers compared with Lyft, especially druing the evening rush hours. Overall lyft has a lower price than uber.
 
 ![](Plots/cost_dur.png)
 
+### Correlation Between Variables
 
+We want to know whether total ride duration and total cost are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the total ride duration and total cost are correlated, the r=0.479. The p-value is less than 0.05, so it is statistically significant. 
 
+We want to know whether whether wait time and total cost are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the wait time and total cost are correlated, the r=0.4. the p-value is less than 0.05, so it is statistically significant.
 
-
-
-##Final Analysis(we need to put our test scores and p-values here)
-
-
-
-We want to know whether total ride duration and total cost are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the total ride duration and total cost are correlated, the r=0.585. the p-value is less than 0.05.
-
-
-We want to know whether whether wait time and total cost are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the wait time and total cost are correlated, the r=0.528. the p-value is less than 0.05.
-
-
-We want to know whether whether wait time and total cost/min are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the wait time and total cost are not that correlated, the r=-0.0268. the p-value is more than 0.05.
-
+We want to know whether whether wait time and total cost/min are correlated, we decide to use the SPEARMAN AND MANN-WHITNEY U TEST, and based on the result of the tes, we find that the wait time and total cost are not that correlated, the r=-0.0716. the p-value is more than 0.05, so we fail to reject the null hypothesis.
 
 we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price. 
 
-
 we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price duing the morning rush hour, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price during the morning rush hour. 
-
 
 we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price during the evening rush hour, than the test result told us that a randomly selected Uber price is not greater than a randomly selected Lyft price during the evening rush hour. 
 
+## Time trend for Cost
+
+The plot we have below is the one that describe the average price in 15 minutes increments during the morning and evening rush hour. We can see clearly that the higest price druing the day is concentrated between 17:30pm to 18:00pm. That could means the worst traffic time period of Boston city is between 17:30pm to 18:00pm.
+
+![](Plots/pricein15min.png)
+
+##Cost/minute
+
+The plot below we have is the one that describe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
+
+The plot below we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This could happens becasue the total duration of Uber is longer than Lyft. 
+
+![](Plots/cost_per_min.png) ![](Plots/cost_per_min_boxp.png)
+
+###Correlation Between Variables
 
 we want to tests prob that a randomly selected Uber's cost per minute is greater than a rand selected Lyft's  cost per minute, than the test result told us that a randomly selected Uber's cost per minute is greater than a randomly selected Lyft's  cost per minute.
+
+
+## Preferable service in different time period
+
+
+
+
+
 
 
