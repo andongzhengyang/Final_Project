@@ -1,6 +1,4 @@
 
-title: "Uber or Lyft: Which is the Better Option from Longwood to Harvard Square?"
-author: "Kara Higgins and Ray An"
 
 
 <img src="Images/UberLyftLogos_Smaller.jpg" alt="logos">
@@ -35,7 +33,7 @@ Our primary objective was to determine which ride service, Uber or Lyft, was a b
 * How does the cost per expected minute of travel compare for each service?
 
 
-## Data Collection & Cleaning
+## The Data 
 
 After checking the Uber and Lyft online dataset, they did not provide any price data, so we decided to create our own dataset.
 
@@ -53,11 +51,7 @@ Each team member collected when they were able during each hour frame, with the 
 
 ## Exploratory Analysis:
 
-Lots of plots and text about what we found out.
 
-The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table below 
-
-Talk about how we had to remove rows for missing observations.
 
 The first plot we have is the distribution of the ride request time plot. We can find that ride request time during the morning rush hour is normally distributed, but druing the night rush hour, the ride requet time varies a lot. 
 
@@ -67,64 +61,65 @@ The first plot we have is the distribution of the ride request time plot. We can
 
 
 
-The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
+The second plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
 
-The fourth plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
+The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
 
-![](Plots/ridecost_distr.png)
-![](Plots/ridecost_distr_boxp.png)
-
+![](Plots/ridecost_distr.png) ![](Plots/ridecost_distr_boxp.png)
 
 
 
 
 
-The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
-
-The sixth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
 
 
-![](Plots/cost_per_min.png)
-![](Plots/cost_per_min_boxp.png)
+The fourth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
+
+The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
+
+
+![](Plots/cost_per_min.png) ![](Plots/cost_per_min_boxp.png)
 
 
 
 
-The seventh plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
 
-The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
+The sixth plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
+
+
 
 
 ![](Plots/waittime_histo.png)
 
 
-The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
+The seventh plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
 
-The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber.
+The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber.
 
-![](Plots/totalduration_histo.png)
-![](Plots/totalduration_boxp.png)
-
+![](Plots/totalduration_histo.png) ![](Plots/totalduration_boxp.png)
 
 
 
-The tenth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
+
+
+
+The nighth plot we have is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. 
 
 ![](Plots/price_am.png)
 
 
-The evelenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
+The tenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
 
 ![](Plots/price_pm.png)
 
 
 
-The twelveth plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
+The eleventh plot we have is the one that describe the average price in 15 minutes increments during the morning rush hour. 
 
 ![](Plots/pricein15min.png)
 
 
-The thirtennth plot we have is the one that describe the cost vs total duration by two service. 
+The twelveth plot we have is the one that describe the cost vs total duration by two service. 
 
 
 ![](Plots/cost_totalduration.png)
@@ -132,7 +127,7 @@ The thirtennth plot we have is the one that describe the cost vs total duration 
 
 
 
-The fifteenth plot we have is the one that describe the
+The thirteenth plot we have is the one that describe the cost vs total duration by two service. 
 
 ![](Plots/cost_dur.png)
 
@@ -141,7 +136,7 @@ The fifteenth plot we have is the one that describe the
 
 
 
-#Final Analysis(we need to put our test scores and p-values here)
+##Final Analysis(we need to put our test scores and p-values here)
 
 
 

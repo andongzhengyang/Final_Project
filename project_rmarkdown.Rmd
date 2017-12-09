@@ -517,7 +517,7 @@ mw_cost <- wilcox.test(data2$COST~data2$SERVICE, exact=F)
 tidy(mw_cost) %>% kable()
 ```
 
-we wnat to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price. 
+we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price. 
 
 
 ```{r, echo=FALSE}
@@ -526,7 +526,7 @@ mw_cost_AM <- wilcox.test(data2_AM$COST~data2_AM$SERVICE, exact=F)
 tidy(mw_cost_AM) %>% kable()
 ```
 
-we wnat to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price duing the morning rush hour, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price during the morning rush hour. 
+we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price duing the morning rush hour, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price during the morning rush hour. 
 
 
 ```{r, echo=FALSE}
@@ -536,7 +536,7 @@ tidy(mw_cost_PM) %>% kable()
 ```
 
 
-we wnat to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price during the evening rush hour, than the test result told us that a randomly selected Uber price is not greater than a randomly selected Lyft price during the evening rush hour. 
+we want to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price during the evening rush hour, than the test result told us that a randomly selected Uber price is not greater than a randomly selected Lyft price during the evening rush hour. 
 
 ```{r, echo=FALSE}
 #Tests prob that a randomly selected Uber cost/min is greater than a rand sel Lyft cost/min
@@ -544,7 +544,7 @@ mw_costmin <- wilcox.test(data2$COST_PER_MIN~data2$SERVICE, exact=F)
 tidy(mw_costmin) %>% kable()
 ```
 
-we wnat to tests prob that a randomly selected Uber's cost per minute is greater than a rand selected Lyft's  cost per minute, than the test result told us that a randomly selected Uber's cost per minute is greater than a randomly selected Lyft's  cost per minute.
+we want to tests prob that a randomly selected Uber's cost per minute is greater than a rand selected Lyft's  cost per minute, than the test result told us that a randomly selected Uber's cost per minute is greater than a randomly selected Lyft's  cost per minute.
 
 ### T-test
 
