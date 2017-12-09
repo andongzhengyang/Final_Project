@@ -18,6 +18,7 @@ library(ggthemes)
 library(ggrepel)
 library(dslabs)
 library(lubridate)
+library(broom)
 ds_theme_set(new="theme_classic")
 ```
 
@@ -199,52 +200,62 @@ numeric_smry_table2 <- data.frame(numeric_smry_table)
 numeric_smry_table2 %>% kable(align='l')
 ```
 
-Talk about how now we're going to make some pretty plots:
+### Univariate Plots
 
-### Time of Ride Request
-ADD AXIS LABELS AND CENTER TITLE. MAYBE ADD COLOR.
+#### Time of Ride Request
+
+The histogram below shows the distribution of the ride request times, with dotted lines representing the rush hour windows that we defined. As you can see, all rides were requested within the window. We hoped to request at random times within each window, which would result in a flat distribution across each window. The distribution is not perfectly flat, but it also doesn't look to have an obvious or concerning shape. The differences are likely due to a tendency to request within the first half of each hour so we did not forget.
+
 ```{r, warning=F, message=F, results='hide'}
 #Get univariate plots
 p <- data2 %>% ggplot()
+
 ##Ride request time distribution - graph shows all-day
 png(filename="Plots/ridereq_distr.png")
-p + geom_histogram(aes(as.numeric(TIME),..density..), breaks=seq(7.99,18.99,.5), color="black") +
+p + geom_histogram(aes(as.numeric(TIME),..density..), 
+                   breaks=seq(7.99,18.99,.5), 
+                   fill= "light blue", 
+                   color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
-  ggtitle("Distribution of Ride Request Time (24 hr clock)")
+  ggtitle("Distribution of Ride Request Time (24 hr clock)")+
+  xlab("Time of Request") +
+  ylab("Density") +
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 
 ```
 ![](Plots/ridereq_distr.png)
 
-The first plot we have is the distribution of the ride request time plot. We can find that ride request time during the morning rush hour is normally distributed, but druing the night rush hour, the ride requet time varies a lot. 
+We created another ride request time histogram, stratifying by the person who collected the data (Kara or Ray) to see if there were specific patterns in either of our collection times. Again, it seems that both distributions are pretty flat. We did a pretty good job of collecting at random times, though we had a tendency to collect during the first half of each hour.
 
 ```{r, warning=F, message=F, results='hide'}
 #Our code here
 ##Ride request time distribution BY COLLECTOR - graph shows all-day
 png(filename="Plots/ridereq_distr_coll.png")
-p + geom_histogram(aes(as.numeric(TIME),..density..),breaks=seq(7.99,18.99,.5),color="black") +
+p + geom_histogram(aes(as.numeric(TIME),..density..),
+                   breaks=seq(7.99,18.99,.5),
+                   fill="light blue",
+                   color="black") +
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
   ggtitle("Distribution of Ride Request Time (24 hr clock)") +
+  xlab("Time of Request") +
+  ylab("Density") +
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))+
   facet_wrap(~COLLECTOR, dir="v")
 dev.off()
 ```
 
 ![](Plots/ridereq_distr_coll.png)
 
-The second plot we have is the one that descirbe the ride request time distribution by collector, we can find that Ray's plot is more likly of the normally distributed, but both of them need to collect more data (after 6:30pm)druing the evening rush hour. 
+#### Cost
 
-### Cost
+The most immediately noticeable characteristic of the cost distribution is the strong right skew. This skew makes sense, given that most of the time, the cost of a ride will be somewhere around $15. However, when there is a surge, the cost of a ride can soar, resulting in the skewing of the right tail. Noting this skew of the data will be important when we perform statistical analyses.
 
-See if we can put cost histogram next to cost/min histogram. Then same for the boxplots. We can just put the image links in the markdown next to each other.
-
-For the ride cost histogram, talk about the skew and how we noticed that this would limit the types of analyses we could do. Skew makes sense, right.
 ```{r, warning=F, message=F, results='hide'}
-#Our code here
-
 #Ride cost - histogram
 png(filename="Plots/ridecost_distr.png")
 p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth = 2) +
@@ -255,8 +266,9 @@ dev.off()
 
 ```
 
-The third plot we have is the distribution of cost by two service druing morning and evening rush hour by using histogram. 
+![](Plots/ridecost_distr.png)
 
+The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, the two service look kind of similar, with Lyft still a little bit cheaper than Uber.
 
 ```{r, warning=F, message=F, results='hide'}
 #Ride cost - boxplot
@@ -273,11 +285,41 @@ dev.off()
 
 ```
 
+![](Plots/ridecost_distr_boxp.png)
 
-![](Plots/ridecost_distr.png) ![](Plots/ridecost_distr_boxp.png)
+#### Total Duration
 
-The fourth plot we have is the distribution of cost by two service druing morning and evening rush hour by using boxplot, we find that in the moring rush hour, the Lyft is cheaper than uber, but in the evening rush hour, the two service are kind of similar, Lyft is still a little bit cheaper than Uber.
+The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
 
+```{r, warning=F, message=F, results='hide'}
+#Total duration - histogram
+png(filename="Plots/totalduration_histo.png")
+p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
+  facet_grid(SERVICE~AM_PM) +
+  ggtitle("Distribution of Total Duration by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+dev.off()
+```
+
+The ninth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber.
+
+```{r, warning=F, message=F, results='hide'}
+#Total duration - box plot
+# Calculate medians to label plot
+p_med_dur <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_dur=median(TOTAL_DURATION))
+# Make plot
+png(filename="Plots/totalduration_boxp.png")
+p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
+  geom_text(data = p_med_dur, aes(x = SERVICE, y = med_dur, label = med_dur), size = 3, vjust = -1)+
+  facet_wrap(~AM_PM) +
+  ggtitle("Distribution of Duration by Service and AM/PM Rush")+
+  theme(legend.position = "none")
+dev.off()
+```
+
+![](Plots/totalduration_histo.png) ![](Plots/totalduration_boxp.png)
+
+#### Cost per Minute
 
 ```{r, warning=F, message=F, results='hide'}
 #Cost/min - histogram
@@ -289,8 +331,7 @@ p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", b
 dev.off()
 ```
 
-
-The fifth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
+The fifth plot we have is the one that describe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
 
 ```{r, warning=F, message=F, results='hide'}
 #Cost/min - box plot
@@ -311,6 +352,7 @@ dev.off()
 
 The sixth plot we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This happens becasue the total duration of Uber is longer than Lyft. 
 
+#### Wait Time
 
 ```{r, warning=F, message=F, results='hide'}
 #Wait time - histogram
@@ -325,40 +367,9 @@ dev.off()
 
 ![](Plots/waittime_histo.png)
 
-The seventh plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram. 
+The seventh plot we have is the one that descirbe the distribution of wait time by two service during the morning and evening rush hour by using histogram.
 
-```{r, warning=F, message=F, results='hide'}
-#Total duration - histogram
-png(filename="Plots/totalduration_histo.png")
-p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
-  facet_grid(SERVICE~AM_PM) +
-  ggtitle("Distribution of Total Duration by Service and AM/PM Rush")+
-  theme(legend.position = "none")
-dev.off()
-```
-
-
-The eighth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using histogram. 
-
-
-```{r, warning=F, message=F, results='hide'}
-#Total duration - box plot
-# Calculate medians to label plot
-p_med_dur <- data2 %>% group_by(SERVICE, AM_PM) %>% summarise(med_dur=median(TOTAL_DURATION))
-# Make plot
-png(filename="Plots/totalduration_boxp.png")
-p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
-  geom_text(data = p_med_dur, aes(x = SERVICE, y = med_dur, label = med_dur), size = 3, vjust = -1)+
-  facet_wrap(~AM_PM) +
-  ggtitle("Distribution of Duration by Service and AM/PM Rush")+
-  theme(legend.position = "none")
-dev.off()
-```
-
-
-![](Plots/totalduration_histo.png) ![](Plots/totalduration_boxp.png)
-
-The ninghth plot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the total duration of Lyft is longer than uber, but during the night rush hour, the total duration of Lyft is shorter than Uber. 
+### Multivariate Plots
 
 ```{r, warning=F, message=F, results='hide'}
 #Plot price over time AM, all days combined/stratified by day of week (5 plots)
@@ -389,17 +400,20 @@ dev.off()
 
 The evelenth plot we have is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. 
 
-ROTATE X AXIS LABELS, ADD TITLE
-MAKE ANOTHER ONE STRATIFIED BY SERVICE
-
 ```{r, warning=F, message=F, results='hide', eval=F}
 library(dplyr)
 #Plot average price in 15 min increments, AM
 png(filename="Plots/pricein15min.png")
 data2 %>% 
-  group_by(inc=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), seq(17,19,.25)))) %>%
+  group_by(inc=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), 16.99, seq(17.25,19,.25))), SERVICE) %>%
   summarize(mean=mean(COST)) %>%
-  ggplot()+geom_col(aes(inc, mean))
+  ggplot()+geom_col(aes(inc, mean, fill=SERVICE), position="dodge") +
+  ggtitle("Average Ride Cost Over 15-Minute Increments")+
+  xlab("Time Increment (24 hour clock)")+
+  ylab("Average Ride Cost ($)")+
+  theme(axis.text.x = element_text(angle=90),
+        plot.title = element_text(hjust = .5, size = 16, face="bold"))+
+  scale_fill_discrete(name="Service")
 dev.off()
 ```
 
@@ -424,7 +438,7 @@ The fourteenth plot we have is the one that describe the cost vs total duration 
 ```{r, warning=F, message=F, results='hide'}
 png(filename="Plots/cost_dur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
-  facet_grid(AM_PM~.)
+  facet_grid(.~AM_PM)
 dev.off()
 ```
 
@@ -435,15 +449,14 @@ The seventeenth plot we have is the one that describe the
 
 #Final Analysis
 
-```{r, echo=FALSE}
-#Our code here
-########SPEARMAN AND MANN-WHITNEY U TEST
+In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
 
-#Spearman -> cor(x,y,method="spearman")
+### Correlation Between Variables
+
+```{r, echo=FALSE}
 #Testing whether total ride duration and total cost are correlated
 sp_dur_cost <- cor.test(data2$TOTAL_DURATION, data2$COST, method="spearman", exact=F)
-print(sp_dur_cost)
-
+tidy(sp_dur_cost) %>% kable()
 
 ```
 
@@ -458,7 +471,7 @@ We want to know whether total ride duration and total cost are correlated, we de
 #Our code here
 #Testing whether wait time and total cost are correlated
 sp_wait_cost <- cor.test(data2$WAIT_TIME, data2$COST, method="spearman", exact=F)
-print(sp_wait_cost)
+tidy(sp_wait_cost) %>% kable()
 
 ```
 
@@ -469,7 +482,7 @@ We want to know whether whether wait time and total cost are correlated, we deci
 #Our code here
 #Testing whether wait time and total cost/min are correlated
 sp_wait_costmin <- cor.test(data2$WAIT_TIME, data2$COST_PER_MIN, method="spearman", exact=F)
-print(sp_wait_costmin)
+tidy(sp_wait_costmin) %>% kable()
 ```
 
 
@@ -477,9 +490,10 @@ We want to know whether whether wait time and total cost/min are correlated, we 
 
 ```{r, echo=FALSE}
 #Our code here
-#Mann-Whitney - Lyft comes first in the list of factors so less would test if Lyft costs less than Uber
+#Mann-Whitney - Tests if Uber and Lyft prices are equal
 #Tests prob that a randomly selected Uber price is greater than a randomly selected Lyft price
-wilcox.test(data2$COST~data2$SERVICE, alternative="less", exact=F)
+mw_cost <- wilcox.test(data2$COST~data2$SERVICE, exact=F)
+tidy(mw_cost) %>% kable()
 ```
 
 we wnat to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price. 
@@ -487,7 +501,8 @@ we wnat to tests probaility that a randomly selected Uber price is greater than 
 
 ```{r, echo=FALSE}
 #Same test just for AM
-wilcox.test(data2_AM$COST~data2_AM$SERVICE, alternative="less", exact=F)
+mw_cost_AM <- wilcox.test(data2_AM$COST~data2_AM$SERVICE, exact=F)
+tidy(mw_cost_AM) %>% kable()
 ```
 
 we wnat to tests probaility that a randomly selected Uber price is greater than a randomly selected Lyft price duing the morning rush hour, than the test result told us that a randomly selected Uber price is greater than a randomly selected Lyft price during the morning rush hour. 
@@ -495,8 +510,8 @@ we wnat to tests probaility that a randomly selected Uber price is greater than 
 
 ```{r, echo=FALSE}
 #Same test just for PM
-wilcox.test(data2_PM$COST~data2_PM$SERVICE, alternative="less", exact=F)
-
+mw_cost_PM <- wilcox.test(data2_PM$COST~data2_PM$SERVICE, exact=F)
+tidy(mw_cost_PM) %>% kable()
 ```
 
 
@@ -504,8 +519,67 @@ we wnat to tests probaility that a randomly selected Uber price is greater than 
 
 ```{r, echo=FALSE}
 #Tests prob that a randomly selected Uber cost/min is greater than a rand sel Lyft cost/min
-wilcox.test(data2$COST_PER_MIN~data2$SERVICE, alternative="less", exact=F)
-
+mw_costmin <- wilcox.test(data2$COST_PER_MIN~data2$SERVICE, exact=F)
+tidy(mw_costmin) %>% kable()
 ```
 
 we wnat to tests prob that a randomly selected Uber's cost per minute is greater than a rand selected Lyft's  cost per minute, than the test result told us that a randomly selected Uber's cost per minute is greater than a randomly selected Lyft's  cost per minute.
+
+### T-test
+
+The t-test will work, but the confidence intervals will be conservative I think.
+
+```{r echo=F, message=F}
+#t-test
+#Find estimated difference and CI in price
+
+ttest_cost <- t.test(COST~SERVICE, data=data2)
+tidy(ttest_cost) %>% kable()
+```
+```{r echo=F, message=F}
+#t-test
+#Find estimated difference and CI in price for AM only
+
+ttest_cost_AM <- t.test(COST~SERVICE, data=data2_AM)
+tidy(ttest_cost_AM) %>% kable()
+```
+
+```{r echo=F, message=F}
+#t-test
+#Find estimated difference and CI in price for PM
+
+ttest_cost_PM <- t.test(COST~SERVICE, data=data2_PM)
+tidy(ttest_cost_PM) %>% kable()
+```
+
+Could also consider bootstrapping to find the median and then comparing the distributions of medians??
+
+
+```{r}
+#Regression - just service
+model1 <- lm(COST~SERVICE, data=data2)
+tidy(model1, conf.int=T)
+
+#Regression - service and total duration
+model2 <- lm(COST~SERVICE+TOTAL_DURATION, data=data2)
+summary(model2)
+tidy(model2, conf.int=T)
+
+#Regression - service, duration, and collector
+model3 <- lm(COST~SERVICE+TOTAL_DURATION+COLLECTOR, data=data2)
+summary(model3)
+tidy(model3, conf.int=T)
+#COLLECTOR IS NOT SIGNIFICANT
+
+#Regression - service, duration, and time since mid
+model4 <- lm(COST~SERVICE+TOTAL_DURATION+TIME_FROM_MID, data=data2)
+summary(model4)
+tidy(model4, conf.int=T)
+#TIME FROM MID NOT SIGNIFICANT
+
+model5 <- lm(COST~SERVICE+TOTAL_DURATION+TIME_FROM_MID+AM_PM, data=data2)
+summary(model5)
+tidy(model5, conf.int = T)
+
+```
+
