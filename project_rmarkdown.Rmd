@@ -241,7 +241,7 @@ p + geom_histogram(aes(as.numeric(TIME),..density..),
   geom_vline(xintercept=c(8,10,17,19), lty=2) +
   geom_label(aes(label="Morning Rush", x=9, y=.6))+
   geom_label(aes(label="Evening Rush", x=18, y=.6))+
-  ggtitle("Distribution of Ride Request Time (24 hr clock)") +
+  ggtitle("Distribution of Ride Request Time (24 hr clock) By Collectors") +
   xlab("Time of Request") +
   ylab("Density") +
   theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))+
@@ -261,7 +261,9 @@ png(filename="Plots/ridecost_distr.png")
 p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth = 2) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Cost by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Cost ($)")+
+  ylab("Density")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 
 ```
@@ -280,7 +282,9 @@ p + geom_boxplot(aes(SERVICE, COST, fill=SERVICE)) +
   geom_text(data = p_med_cost, aes(x = SERVICE, y = med_cost, label = med_cost), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Total Cost by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Service")+
+  ylab("Cost ($)")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 
 ```
@@ -297,7 +301,9 @@ png(filename="Plots/totalduration_histo.png")
 p + geom_histogram(aes(TOTAL_DURATION,..density.., fill=SERVICE), color="black", binwidth = 2) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Total Duration by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Total Duration")+
+  ylab("Density")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -313,7 +319,9 @@ p + geom_boxplot(aes(SERVICE, TOTAL_DURATION, fill=SERVICE)) +
   geom_text(data = p_med_dur, aes(x = SERVICE, y = med_dur, label = med_dur), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Duration by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Service")+
+  ylab("Total Duration")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -327,7 +335,9 @@ png(filename="Plots/cost_per_min.png")
 p + geom_histogram(aes(COST_PER_MIN,..density.., fill=SERVICE), color="black", binwidth=.1) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Cost Per Minute")+
+  ylab("Density")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -343,7 +353,9 @@ p + geom_boxplot(aes(SERVICE, COST_PER_MIN, fill=SERVICE)) +
   geom_text(data = p_med_costmin, aes(x = SERVICE, y = med_costmin, label = round(med_costmin, 3)), size = 3, vjust = -1)+
   facet_wrap(~AM_PM) +
   ggtitle("Distribution of Cost/Min by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Service")+
+  ylab("Cost Per Minute")
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -360,7 +372,9 @@ png(filename="Plots/waittime_histo.png")
 p + geom_histogram(aes(WAIT_TIME,..density.., fill=SERVICE), color="black", binwidth = 1) +
   facet_grid(SERVICE~AM_PM) +
   ggtitle("Distribution of Wait Time by Service and AM/PM Rush")+
-  theme(legend.position = "none")
+  xlab("Wait Time")+
+  ylab("Density")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -378,7 +392,8 @@ data2_AM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
   facet_wrap(~DAY_OF_WK, nrow = 1) +
   ggtitle("Morning Commute Cost vs Time of Day")+
   xlab("Time of Day")+
-  ylab("Cost ($)")
+  ylab("Cost ($)")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -392,7 +407,8 @@ data2_PM %>% ggplot() + geom_point(aes(TIME, COST, color=SERVICE))+
   facet_wrap(~DAY_OF_WK, nrow = 1) +
   ggtitle("Evening Commute Cost vs Time of Day")+
   xlab("Time of Day")+
-  ylab("Cost ($)")
+  ylab("Cost ($)")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -427,7 +443,8 @@ png(filename="Plots/cost_totalduration.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
   ggtitle("Cost vs Total Duration") +
   xlab("Cost ($)")+
-  ylab("Total Duration")
+  ylab("Total Duration")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
@@ -438,7 +455,11 @@ The fourteenth plot we have is the one that describe the cost vs total duration 
 ```{r, warning=F, message=F, results='hide'}
 png(filename="Plots/cost_dur.png")
 p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
-  facet_grid(.~AM_PM)
+  facet_grid(.~AM_PM)+
+  ggtitle("Cost vs Total Duration")+
+  xlab("Cost ($)")+
+  ylab("Total Duration")+
+  theme(plot.title = element_text(hjust = .5, size = 16, face="bold"))
 dev.off()
 ```
 
