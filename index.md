@@ -97,6 +97,8 @@ The plot we have below is the one that describe the cost vs total duration by tw
 
 #Final Analysis
 
+
+
 In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
 
 ## Time trend for Cost
