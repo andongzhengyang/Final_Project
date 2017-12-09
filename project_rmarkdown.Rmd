@@ -380,7 +380,7 @@ dev.off()
 ## Multivariate Plots
 
 
-###Cost druing morning rush hour
+###Cost during morning rush hour
 
 The plot we have below is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. But for both of Lyft and uber, they did have some higher price outliers.
 
@@ -416,22 +416,9 @@ dev.off()
 ```
 
 ![](Plots/price_pm.png)
-
-
-#Final Analysis
-
-In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
-
-##Service vs Cost
-
-
-
-
 The plot we have below is the one that describe the cost vs total duration by two service. We can see from the plot that Uber has several highest cost outliers compared with Lyft. Overall lyft has a lower price than uber. 
 
-
-
-
+### Cost vs Total Duration
 
 ```{r, warning=F, message=F, results='hide'}
 #Plot of cost vs total duration, color by service
@@ -444,7 +431,7 @@ p + geom_point(aes(TOTAL_DURATION, COST, color=SERVICE)) +
 dev.off()
 ```
 
-![](Plots/cost_totalduration.png
+![](Plots/cost_totalduration.png)
 
 
 The plot we have below is the one that describe the cost vs total duration by two service. We use morning and evening rush hour to better interpret the trand of cost for two service. This plot also shows that Uber has several highest cost outliers compared with Lyft, especially druing the evening rush hours. Overall lyft has a lower price than uber. 
@@ -462,6 +449,10 @@ dev.off()
 ```
 
 ![](Plots/cost_dur.png)
+
+#Final Analysis
+
+In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
 
 ###Correlation Between Variables
 
@@ -525,12 +516,12 @@ tidy(mw_cost_PM) %>% kable()
 
 
 
-##Time trend for Cost
+##Time trend for Cost by Service
 
 
 The plot we have below is the one that describe the average price in 15 minutes increments during the morning and evening rush hour. We can see clearly that the higest price druing the day is concentrated between 17:30pm to 18:00pm. That could means the worst traffic time period of Boston city is between 17:30pm to 18:00pm.
 
-```{r, warning=F, message=F, results='hide', eval=F}
+```{r, warning=F, message=F, results='hide'}
 library(dplyr)
 #Plot average price in 15 min increments, AM
 png(filename="Plots/pricein15min.png")
@@ -554,6 +545,24 @@ dev.off()
 
 ##Cost/minute
 
+
+```{r, warning=F, message=F, results='hide'}
+#Plot average price in 15 min increments, AM
+png(filename="Plots/priceminin15min.png")
+data2 %>% 
+  group_by(inc=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), 16.99, seq(17.25,19,.25))), SERVICE) %>%
+  summarize(mean=mean(COST_PER_MIN)) %>%
+  ggplot()+geom_col(aes(inc, mean, fill=SERVICE), position="dodge") +
+  ggtitle("Average Ride Cost/Min Over 15-Minute Increments")+
+  xlab("Time Increment (24 hour clock)")+
+  ylab("Average Ride Cost/Min ($)")+
+  theme(axis.text.x = element_text(angle=90),
+        plot.title = element_text(hjust = .5, size = 16, face="bold"))+
+  scale_fill_discrete(name="Service")
+dev.off()
+```
+
+![](Plots/priceminin15min.png)
 
 The plot below we have is the one that describe that the distribution of cost per minute by two service druing morning and evening rush hour by using histogram.
 
@@ -603,8 +612,99 @@ tidy(mw_costmin) %>% kable()
 ```
 
 
+## Guide to Preferred Service Based on Cost and wait Time
 
-##Preferable service in different time period
+```{r, echo=F, message=F, results='hide'}
+# Assign stratum 1/2 for collection in first or second hour of rush hour period - this will allow us to group the paired Uber/Lyft observations
+# Keep only paired time points with Uber and Lyft data
+# Use lag to find Lyft minus Uber for cost and wait time
+# Implement decision scheme:
+#   If one of the services is >= $pricediff cheaper, select that service
+#   If prices are within $pricediff of each other, pick service with shorter wait time
+#   If wait times equal and costs within $pricediff, choose svc with cheaper price
+#   If price and wait time is exactly equal, coin flip to choose service
+
+pricediff <- 2
+svc_compare <- data2 %>% mutate(COLLECT_STRATUM = 
+                              ifelse((TIME>7.99 & TIME<9) | (TIME>16.99 & TIME<18), 1, 2)) %>%
+  group_by(DATE,AM_PM,COLLECT_STRATUM, COLLECTOR) %>%
+  filter(n() == 2) %>%
+  summarize(l_minus_u_cost = diff(COST), 
+            l_minus_u_wait = diff(WAIT_TIME),
+            time = mean(TIME),
+            mincost = min(COST))
+
+choice_scheme <- svc_compare %>% mutate(winner = ifelse(l_minus_u_cost>pricediff, "Uber",
+                                                  ifelse(l_minus_u_cost<(-pricediff), "Lyft",
+                                                  ifelse(l_minus_u_wait>0, "Uber",
+                                                  ifelse(l_minus_u_wait<0, "Lyft",
+                                                  ifelse(l_minus_u_cost>0, "Uber",
+                                                  ifelse(l_minus_u_cost<0, "Lyft",
+                                                  ifelse(runif(1)<.5, "Uber", "Lyft"))))))))
+
+choice_scheme %>% ungroup() %>% 
+  summarize(p_UberWin=mean(winner=="Uber"),
+            p_Lyftwin=mean(winner=="Lyft"))
+
+choice_scheme %>% ungroup() %>%
+  group_by(AM_PM) %>%
+  summarize(p_UberWin=mean(winner=="Uber"),
+            p_Lyftwin=mean(winner=="Lyft"))
+
+forplot <- choice_scheme %>% ungroup() %>%
+  group_by(Time_pd=cut(as.numeric(time), breaks=c(seq(8,10,.25), 16.99, seq(17.25,19,.25)))) %>%
+  summarize(p_Uberwin=mean(winner=="Uber"),
+            p_Lyftwin=mean(winner=="Lyft"),
+            n=n(),
+            avg_mincost=mean(mincost))
+png(filename="Plots/choicescheme_lyft.png")
+forplot %>% ggplot() +
+  geom_col(aes(Time_pd,p_Lyftwin, fill=avg_mincost)) +
+  geom_hline(yintercept = .5, lty=2)+
+  ggtitle("Probability That Lyft is a Better Choice vs Time of Day")+
+  xlab("Time Period (24 hour clock)") +
+  ylab("Probability that Lyft is a Better Choice")+
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = .5, size = 16, face="bold"))+
+  scale_fill_continuous(name="Mean of the \ncost for the \ncheapest option", 
+                        trans="reverse")
+dev.off()
+
+
+png(filename="Plots/choicescheme_uber.png")
+forplot %>% ggplot() +
+  geom_col(aes(Time_pd,p_Uberwin, fill=avg_mincost)) +
+  geom_hline(yintercept = .5, lty=2)+
+  ggtitle("Probability that Uber is a Better Choice vs Time of Day")+
+  xlab("Time Period (24 hour clock)") +
+  ylab("Probability that Uber is a Better Choice")+
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = .5, size = 16, face="bold"))+
+  scale_fill_continuous(name="Mean of the \ncost for the \ncheapest option", 
+                        trans="reverse")
+dev.off()
+```
+
+Explain decision-making process and then what the plot shows.
+
+![](Plots/choicescheme_lyft.png)
+
+This one shows just the opposite information, from the perspective of someone who wants Uber:
+
+![](Plots/choicescheme_uber.png)
+
+### Best Time of Morning/Evening to Travel
+
+```{r, echo=F, message=F}
+data2 %>% 
+  group_by(Time_pd=cut(as.numeric(TIME), breaks=c(seq(8,10,.25), 16.99, seq(17.25,19,.25))), AM_PM) %>%
+  summarize(meancost=mean(COST),
+            meandur=mean(TOTAL_DURATION)) %>%
+  ungroup() %>%
+  group_by(AM_PM) %>%
+  filter(meancost==min(meancost) | meandur==min(meandur)) %>% 
+  data.frame(.) %>% kable()
+```
 
 
 ### T-test
