@@ -25,7 +25,7 @@ ds_theme_set(new="theme_classic")
 <img src="Images/UberLyftLogos_Smaller.jpg" alt="logos">
 
 
-## Overview & Motivation
+# Overview & Motivation
 
 <img src="Images/UberLyftGoogleMap.jpg" align="right">
 The Harvard T.H. Chan School of Public Health is located in the Longwood Medical area in Boston, while the main Harvard University campus is located in Cambridge. Many Harvard Chan students, staff, and faculty choose to live in Cambridge, and others cross-register for classes or attend events that are offered on the main campus. Thus, there is a need to determine the most cost-effective and efficient commute option between the two campuses, especially during rush-hour periods. The M2 shuttle provides a free option but can be unreliable, crowded, inflexible due to its set schedule, and takes an inefficient route in order to stop at popular locations along Massachusetts Avenue. The MBTA offers several routes that are also inefficient and can experience heavy traffic. A better option may be travel by car.
@@ -50,6 +50,9 @@ Our primary objective was to determine which ride service, UberX or Lyft (standa
 * What do the time of day/day of week trends in fares look like for each service?
 * Which service is preferable based on cost and wait time during morning and evening rush hour?
 * Which service has a shorter wait time and/or expectated time to destination?
+
+While collecting the data, we noticed variability in duration times for the same theoretical route at the same time of day, and we added one more research question:
+
 * How does the cost per expected minute of travel compare for each service?
 
 ## The Data
