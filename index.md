@@ -111,7 +111,7 @@ The plot we have below is the one that describe the average price in 15 minutes 
 
 
 
-##Cost Per Minute
+## Cost Per Minute
 
 
 
