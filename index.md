@@ -84,7 +84,8 @@ The plot we have below is the one that compare the price for two service during 
 
 The plot we have below is the one that describe the cost vs total duration by two service. We can see from the plot that Uber has several highest cost outliers compared with Lyft. Overall lyft has a lower price than uber. 
 
-![](Plots/cost_totalduration.png
+
+![](Plots/cost_totalduration.png)
 
 
 The plot we have below is the one that describe the cost vs total duration by two service. We use morning and evening rush hour to better interpret the trand of cost for two service. This plot also shows that Uber has several highest cost outliers compared with Lyft, especially druing the evening rush hours. Overall lyft has a lower price than uber.
@@ -97,11 +98,10 @@ The plot we have below is the one that describe the cost vs total duration by tw
 
 
 
-In our final analysis, we ran several statistical tests to assess the correlation between variables in our dataset and see which variables may guide our choice of service.
 
 
 
-## Time trend for Cost
+## Time Trend for Cost
 
 The plot we have below is the one that describe the average price in 15 minutes increments during the morning and evening rush hour. We can see clearly that the higest price druing the day is concentrated between 17:30pm to 18:00pm. That could means the worst traffic time period of Boston city is between 17:30pm to 18:00pm.
 
@@ -109,9 +109,16 @@ The plot we have below is the one that describe the average price in 15 minutes 
 
 
 
-##Cost/minute
+
+
+##Cost Per Minute
+
+
+
 
 The plot below we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This could happens becasue the total duration of Uber is longer than Lyft. 
+
+
 
 ![](Plots/cost_per_min_boxp.png)
 
