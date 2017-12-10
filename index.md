@@ -1,6 +1,4 @@
----
-author: "Kara Higgins and Ray An"
----
+Authors: Kara Higgins & Ray An
 
 # Screencast
 
