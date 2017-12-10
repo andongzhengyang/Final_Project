@@ -535,7 +535,7 @@ In our final analysis, we ran several statistical tests to answer our initial re
 
 In order to to test whether Uber and Lyft prices differ for this very skewed data, we decided to use a Mann-Whitney U test. We considered using a t-test, but due to the non-normality of the data, decided that using a Mann-Whitney test was safer, and it would give us all the information that we needed. A t-test, however, would have still probably been valid given our high number of observations.
 
-The Mann-Whitney U test tests the probaility that a randomly selected Uber price is less than a randomly selected Lyft price. The null hypothesis is that the probability is 0.5, equivalent to a coin flip. The test result (p<.001) told us that the probability that a randomly selected Uber price is less than a randomly selected Lyft price, for all times combined, is significantly less than 0.5.
+The Mann-Whitney U test tests the probaility that a randomly selected Uber price is less than a randomly selected Lyft price. The null hypothesis is that the probability is 0.5, equivalent to a coin flip. The test result (p<.001) told us that the probability that a randomly selected Uber price is less than a randomly selected Lyft price, for all times combined, is significantly less than 0.5. Overall, Lyft is the cheaper service for this route.
 
 ```{r, echo=FALSE}
 #Tests prob that a randomly selected Uber price is greater than a randomly selected Lyft price
@@ -543,7 +543,7 @@ mw_cost <- wilcox.test(data2$COST~data2$SERVICE, exact=F)
 tidy(mw_cost) %>% kable()
 ```
 
-We ran the same Mann-Whitney U test, stratifying by morning and evening rush hour to see if this overall difference held true for the separate windows. The result for morning is below and was significant, with p<0.001.
+We ran the same Mann-Whitney U test, stratifying by morning and evening rush hour to see if this overall difference held true for the separate windows. The result for morning is below and was significant, with p<0.001. In the morning, Lyft is the cheaper service for this route.
 
 ```{r, echo=FALSE}
 #Same test just for AM
@@ -551,7 +551,7 @@ mw_cost_AM <- wilcox.test(data2_AM$COST~data2_AM$SERVICE, exact=F)
 tidy(mw_cost_AM) %>% kable()
 ```
 
-The result of the Mann-Whitney U test for evening was also significant, with p=0.005.
+The result of the Mann-Whitney U test for evening was also significant, with p=0.005. In the evening, Lyft is the cheaper service for this route.
 
 ```{r, echo=FALSE}
 #Same test just for PM
@@ -567,7 +567,7 @@ The plots from our exploratory analysis nicely showed the time trends in fares f
 ![](Plots/price_am.png) 
 ![](Plots/price_pm.png)
 
-The plot below answers both this question and the previous question about cost, showing the average price for each service in 15 minutes increments during the morning and evening rush hours. It looks as though the highest price during the day is concentrated between 5:30-6pm. That could be due to traffic and/or the large number of people leaving work around that time each day. It is interesting that there is no major spike for the morning. Maybe there would have been a spike if we had reversed the direction of the route.
+The plot below answers both this question and the previous question about cost, showing the average price for each service in 15 minutes increments during the morning and evening rush hours. It looks as though the highest price during the day is concentrated between 5:30-6pm; during part of that time, Lyft is more expensive, and during part, Uber is more expensive (we will explore this later in our guide). These high prices could be due to traffic and/or the large number of people leaving work around that time each day. It is interesting that there is no major spike for the morning. Maybe there would have been a spike if we had reversed the direction of the route.
 
 ```{r, warning=F, message=F, results='hide'}
 library(dplyr)
@@ -590,6 +590,8 @@ dev.off()
 
 ## How does the cost per expected minute of travel compare for each service?
 
+Below is a plot similar to the one just displayed, but instead of showing cost, it shows cost per minute. We can draw very similar conclusions from this plot about the busiest and most expensive time to travel, as well as the comparison of cost between services.
+
 ```{r, warning=F, message=F, results='hide'}
 #Plot average price in 15 min increments, AM
 png(filename="Plots/priceminin15min.png")
@@ -608,7 +610,7 @@ dev.off()
 
 ![](Plots/priceminin15min.png)
 
-We used the Mann-Whitney U test again to test whether a randomly selected Uber's cost per minute was less than a randomly selected Lyft's cost per minute. We rejected the null and concluded that even based on cost per minute, Uber is more expensive than Lyft. This means we can't blame the price difference on the fact that Uber estimates longer duration.
+We used the Mann-Whitney U test again to test whether a randomly selected Uber's cost per minute was less than a randomly selected Lyft's cost per minute. We rejected the null and concluded that even based on cost per minute, Uber is more expensive than Lyft. This means we can't blame the price difference on a difference in duration.
 
 ```{r, echo=FALSE}
 #Tests prob that a randomly selected Uber cost/min is greater than a rand sel Lyft cost/min
@@ -618,7 +620,7 @@ tidy(mw_costmin) %>% kable()
 
 ## Which service has a shorter expectated time to destination?
 
-In order to visualize the expected duration, we took the average duration over 15-minute intervals within each rush hour period. In the evening, it is clear that on average, Uber's estimated duration is greater than Lyft's expected duration.
+In order to visualize the expected duration, we took the average duration over 15-minute intervals within each rush hour period. In the evening, it is clear that on average, Uber's estimated duration is greater than Lyft's expected duration. We're still not sure why this is, but we assume it must have to do with differences in their estimation algorithms. An interesting extension of this project would be to see which service's estimations are more accurate, but that would require actually paying for and taking the rides, or having some other data source with that information.
 
 ```{r, warning=F, message=F, results='hide'}
 #Plot average duration in 15 min increments, AM
@@ -641,6 +643,7 @@ dev.off()
 ## Which service is preferable based on cost and wait time during morning and evening rush hour?
 
 In order to answer this question, we developed a decision-making process between Uber and Lyft that we thought was reasonable. We then took the proportion of "wins" for Lyft/Uber and plotted. The decision-making process was the following:
+
 * If one service is more than $2 cheaper, take that service.
 * If the services are within $2 of each other, take the one with the shorter wait time.
 * If wait time are equivalent and services are within $2 of each other, take the cheaper service.
