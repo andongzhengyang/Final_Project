@@ -50,45 +50,58 @@ The histogram below shows the distribution of the ride request times, with dotte
 
 ### Cost
 
-The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, the two service look kind of similar, with Lyft still a little bit cheaper than Uber.
+The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, costs for the two services look fairly similar, with Lyft still a bit cheaper than Uber.
 
 ![](Plots/ridecost_distr_boxp.png)
 
 
 ### Total Duration
 
-The boxplot we have is the one that descirbe the distribution of total duration by two service during the morning and evening rush hour by using boxplot. We cna find that the during the morning rush hour, the mean of the total duration of Lyft is same with uber, but overall Uber takes less total duration time than Lyft. During the evening rush hour, the mean of the total duration of Lyft is shorter than Uber, overall Lyft takes less total duration time than Uber, this is oppsite with the morning rush hour result. 
+The boxplot gives us another way to view the longer expected Uber durations. During the evening rush hour, the median duration for Uber is greater than the median duration for Lyft. In the morning, the median durations are the same, and the distribution of Uber’s durations is more compact. We wonder if some of these differences in expected duration, especially in the evening, contributes to differences in ride cost. Based on the results we’ve seen so far, it seems that Lyft is likely to have better prices both morning and evening and shorter duration in the evening.
+
+
 
 
 ![](Plots/totalduration_boxp.png)
+
+
+### Cost Per Minute
+
+
+
+
+The boxplot shows the during the morning rush hour, Lyft’s cost per minute is more favorable than Uber’s. However, in the evening, Lyft and Uber’s cost per minute is about equal. This leads us to think that Uber’s longer expected duration is the reason behind the higher absolute cost for a ride that we saw before.
+
+
+
+![](Plots/cost_per_min_boxp.png)
 
 
 
 ## Multivariate Plots
 
 
-### Cost druing morning rush hour
+### Cost Trends Over Morning/Evening Rush Hours
 
-The plot we have below is the one that compare the price for two service during the morning rush hour. We can find that Lyft is cheaper than Uber for most of time. But for both of Lyft and uber, they did have some higher price outliers.
+The plots below allow us to visualize trend in ride cost for the morning and evening rush hours over a typical week. It is pretty obvious from the morning plot that Lyft is most often the cheaper service. There are some outlier high costs that look to happen before 9am. In the evening, there is not as clear of a difference between services, but looking at the very bottom of the graph, it seems that there is a row of low-price Lyft rides with a row of Uber rides with slightly higher costs just above this. Our statistical anaylsis will tell us more about this.
 
-![](Plots/price_am.png) 
-
-### Cost during evening rush hour
-
-The plot we have below is the one that compare the price for two service during the evening rush hour. We can find the price between the Lyft and uber is similar. We can the cost of lyft and uber is kind of mixed with each other. However, we can still see the bottome line (lower cost) in thsi plot still shows that Lyft have a lower price. 
-
-![](Plots/price_pm.png)
+In both plots, it’s difficult to tell what the cost trends are over the course of rush hour, so this will need to be investigated further during the final analysis.
 
 
-### Service vs Cost
+![](Plots/price_am.png) ![](Plots/price_pm.png)
 
-The plot we have below is the one that describe the cost vs total duration by two service. We can see from the plot that Uber has several highest cost outliers compared with Lyft. Overall lyft has a lower price than uber. 
+
+### Cost vs Total Duration
+
+We next looked at cost of a ride versus total duration. In general, there looks to be a positive association between cost and duration. It is interesting that Lyft cost never goes above $30 even for high duration rides, while Uber has many rides that cost above that.
 
 
 ![](Plots/cost_totalduration.png)
 
 
-The plot we have below is the one that describe the cost vs total duration by two service. We use morning and evening rush hour to better interpret the trand of cost for two service. This plot also shows that Uber has several highest cost outliers compared with Lyft, especially druing the evening rush hours. Overall lyft has a lower price than uber.
+We stratified the above plot further by morning/evening rush hour in order to get a better sense of when these differences were occurring. It looks like in the morning rush hour, as we’ve seen before, there are small but consistent differences between services, and the large cost differences and high duration rides occur during the evening rush hour. The positive trend is more visible in the evening plot than in the morning plot.
+
+
 
 ![](Plots/cost_dur.png)
 
@@ -101,9 +114,18 @@ The plot we have below is the one that describe the cost vs total duration by tw
 
 
 
+
+
+
+
+
+
+# Final Analysis
+
+
 ## Time Trend for Cost
 
-The plot we have below is the one that describe the average price in 15 minutes increments during the morning and evening rush hour. We can see clearly that the higest price druing the day is concentrated between 17:30pm to 18:00pm. That could means the worst traffic time period of Boston city is between 17:30pm to 18:00pm.
+The plot below answers both this question and the previous question about cost, showing the average price for each service in 15 minutes increments during the morning and evening rush hours. It looks as though the highest price during the day is concentrated between 5:30-6pm; during part of that time, Lyft is more expensive, and during part, Uber is more expensive (we will explore this later in our guide). These high prices could be due to traffic and/or the large number of people leaving work around that time each day. It is interesting that there is no major spike for the morning. Maybe there would have been a spike if we had reversed the direction of the route.
 
 ![](Plots/pricein15min.png)
 
@@ -111,23 +133,18 @@ The plot we have below is the one that describe the average price in 15 minutes 
 
 
 
-## Cost Per Minute
-
-
-
-
-The plot below we have is the one that descirbe that the distribution of cost per minute by two service druing morning and evening rush hour by using boxplot. We can find that during the moring rush hour, the cost per minute of Lyft is cheaper than Uber. But druing the evening rush hour, the cost per minute of Uber is cheaper than Lyft. This could happens becasue the total duration of Uber is longer than Lyft. 
-
-
-
-![](Plots/cost_per_min_boxp.png)
-
-
-
-
 ## Guide to Preferred Service Based on Cost and wait Time
 
-Based on the plot below, we can clearly see that we should choose Lyft other than Uber for the most of time during the day. However during the 17:45pm to 18pm, we can choose Uber. As for the time period between 18:15pm to 18:30pm, the cost of Uber and lyft is similar. 
+In order to answer the question: Which service is preferable based on cost and wait time during morning and evening rush hour?
+
+we developed a decision-making process between Uber and Lyft that we thought was reasonable. We then took the proportion of “wins” for Lyft/Uber and plotted. The decision-making process was the following:
+
+If one service is more than $2 cheaper, take that service.
+If the services are within $2 of each other, take the one with the shorter wait time.
+If wait time are equivalent and services are within $2 of each other, take the cheaper service.
+If cost and wait time are exactly equal (this didn’t happen in our dataset), flip a coin.
+
+Based on the plot below, we can clearly see that we should choose Lyft other than Uber for the most of time during the day. However during the 17:45pm to 18pm, we can choose Uber. As for the time period between 18:15pm to 18:30pm, the cost of Uber and lyft is similar. After grouping the data into 15-minute intervals, we also looked at which 15-minute interval had the lowest average cost and wait time. We found that in the morning, 9:30-9:45 was the best time to travel, and in the evening, 7:45-9pm was the best time to travel. This makes sense, given that these are both on the tail end of rush hour.
 
 ![](Plots/choicescheme_lyft.png)
 
