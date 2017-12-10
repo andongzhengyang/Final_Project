@@ -8,6 +8,8 @@ output: html_document
 knitr::opts_chunk$set(echo = F)
 ```
 
+Note: Please find the data in our final project repository. It is called FREEZE_FINAL_4DEC2017.csv.
+
 ```{r, echo=FALSE, message=F, warning=F}
 library(knitr)
 library(tidyverse)
@@ -22,7 +24,7 @@ library(broom)
 ds_theme_set(new="theme_classic")
 ```
 
-<img src="Images/UberLyftLogos_Smaller.jpg" alt="logos">
+![](Images/UberLyftLogos_Smaller.jpg)
 
 
 # Overview & Motivation
@@ -30,7 +32,7 @@ ds_theme_set(new="theme_classic")
 <img src="Images/UberLyftGoogleMap.jpg" align="right">
 The Harvard T.H. Chan School of Public Health is located in the Longwood Medical area in Boston, while the main Harvard University campus is located in Cambridge. Many Harvard Chan students, staff, and faculty choose to live in Cambridge, and others cross-register for classes or attend events that are offered on the main campus. Thus, there is a need to determine the most cost-effective and efficient commute option between the two campuses, especially during rush-hour periods. The M2 shuttle provides a free option but can be unreliable, crowded, inflexible due to its set schedule, and takes an inefficient route in order to stop at popular locations along Massachusetts Avenue. The MBTA offers several routes that are also inefficient and can experience heavy traffic. A better option may be travel by car.
 
-Taking Uber or Lyft may save time that could better be spent studying or working, especially if we can determine the best time to travel and the best service to use in order to get a good price. 
+Taking Uber or Lyft from Longwood to Cambridge may save time that could better be spent studying or working, especially if we can determine the best time to travel and the best service to use in order to get a good price. 
 
 # Background
 
@@ -40,30 +42,33 @@ There are dozens of online resources that compare different aspects of Uber, Lyf
 * Another article by [Alvia](http://www.alvia.com/lyft-vs-uber/) presents an estimate of the pricing algorithms for each service. It says that Uber fares are generally cheaper nationwide, but the price comparison is dependent on location and whether there is a surge.
 * Finally, [FareEstimate.com](http://www.fareestimate.com/) is a website where users can input a pickup and dropoff location and instantly view a price comparison of all Uber and Lyft services.
 
-Both the [Uber](https://help.uber.com/h/d2d43bbc-f4bb-4882-b8bb-4bd8acf03a9d) and [Lyft](https://help.lyft.com/hc/en-us/articles/214218147-How-to-calculate-a-Lyft-ride-s-cost) websites are vague about their pricing algorithm, which seems to be partially due to the new upfront pricing feature in both apps, as well as possible pricing differences by city.
+Both the [Uber](https://help.uber.com/h/d2d43bbc-f4bb-4882-b8bb-4bd8acf03a9d) and [Lyft](https://help.lyft.com/hc/en-us/articles/214218147-How-to-calculate-a-Lyft-ride-s-cost) websites are vague about their pricing algorithms, which seems to be partially due to the new upfront pricing feature in both apps, as well as possible pricing differences by city.
 
 # Initial Questions
 
 Our primary objective was to determine which ride service, UberX or Lyft (standard car service, not LyftLine), was a better option for traveling the 4.7 miles by car from the Longwood campus to the Cambridge campus during the morning (8-10am) and evening (5-7pm) rush hour periods. Through data visualization, we hoped to establish a guide for when to take each service. The following research questions guided our project:
 
 * Which service is cheaper overall for our chosen route?
-* What do the time of day/day of week trends in fares look like for each service?
+* What do the time trends in fares look like for each service during weekdays?
 * Which service is preferable based on cost and wait time during morning and evening rush hour?
 * Which service has a shorter wait time and/or expectated time to destination?
+* When is the best ride request time within each rush hour period to minimize cost and wait time?
 
-While collecting the data, we noticed variability in duration times for the same theoretical route at the same time of day, and we added one more research question:
+While collecting the data, we noticed variability in duration times for the same theoretical route at the same time of day, so we added one more research question:
 
 * How does the cost per expected minute of travel compare for each service?
 
 # The Data
 
-After checking the Uber and Lyft online dataset, they did not provide any price data, so we decided to create our own dataset.
+Uber and Lyft both offer an application programming interface with some of their data publicly available for developers; however, it was beyond our coding abilities to understand and use this data, so we decided to create our own dataset by collecting the data ourselves.
 
-We decided to collect the data ourselves. The 4-week collection period ran Monday-Friday from November 6 - December 1. We aimed to collect a total of 16 data points each day (8 Uber/Lyft pairs) for a total goal of 320 data points. Each team member used screenshots on his/her phone to collect the data each day: 1 Uber observation and 1 Lyft observation at random times between 8-9am, 9-10am, 5-6pm, and 6-7pm.
+Our 4-week collection period ran Monday-Friday each week from November 6 - December 1. We aimed to collect a total of 16 data points each day (8 Uber/Lyft pairs) for a total goal of 320 data points. Each team member used screenshots on his/her phone to collect the data each day: 1 Uber observation and 1 Lyft observation at random times between 8-9am, 9-10am, 5-6pm, and 6-7pm.
 
-Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall to Widener Gate. Then, we took a screenshot of the estimated price, wait time, and duration time for a standard ride (not "Pool" or "Line"). Later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the data collection spreadsheet can be found below:
+Each team member collected when they were able during each hour frame, with the hope that our collection times would be somewhat "random" and we would accumulate enough data over each time interval for meaningful analysis. We used the Uber and Lyft App to set the position from Vanderbilt Hall in Longwood to Widener Gate in Cambridge. Then, we took a screenshot of the estimated price, wait time, and duration time for a standard ride (not "Pool" or "Line"). Later on that day, we imported our data on into a spreadsheet. An example data screenshot and a portion of the data collection spreadsheet can be found below:
 
-## Sample Screenshots
+## Sample Data Collection Screenshots
+
+We used screenshots like these to quickly capture data throughout the day, and we kept them on file in case we had a question about the accuracy of the data during analysis. The parts of the screenshot that were transferred to the spreadsheet are circled in red.
 
 ![](Images/Uber_Screenshot_Resized.png) ![](Images/Lyft_Screenshot_Resized.png)
 
@@ -81,9 +86,9 @@ head(data) %>% kable(align='c')
 
 ## Data Cleaning and Formatting
 
-The code below shows our data cleaning/formatting process. Variable specifications can be found in the comments of the code and are also displayed in the table following the code.
+Our data cleaning/formatting process was relatively straightforward. Because we had carefully designed the data collection process with analysis in mind and controlled the collection ourselves, there was not too much cleaning that needed to be done. Our work mostly consisted of formatting the variables. We left the code visible here so that the process can clearly be seen. Variable specifications can be found in the comments of the code and are also displayed in the table following the code.
 
-There were 6 scheduled observation times for which data for both Uber and Lyft was not collected. We assumed that those were missing completely at random and removed them from the dataset. The only other missing data point was the arrival time (and therefore duration and cost/minute) for a Lyft data point between 8-9am on November 16. This happened because a screenshot was taken before the app displayed the estimated arrival time. We assumed this was also random and removed this observation. The resulting dataset has 313 observations.
+There were 6 scheduled observation times for which data for both Uber and Lyft was not collected. We assumed that those were missing completely at random and removed them from the dataset. The only other missing data point was the arrival time (and therefore duration) for a Lyft data point between 8-9am on November 16. This happened because a screenshot was taken before the app displayed the estimated arrival time. We assumed this was also missing completely at random and removed this observation. The resulting dataset had 313 observations.
 
 ```{r, echo=T, message=F}
 #Formatting and cleaning data
@@ -160,7 +165,8 @@ We used the `summary` function to examine the values of the data and ensure that
 summary(data2)
 ```
 
-Because the output of the summary function is not in the clearest format and does not include standard deviation, we also wrote a function to produce a table of univariate statistics for our numeric variables.
+
+Because the output of the summary function is not in the clearest format and does not include standard deviation, we also wrote a function to produce a table of univariate statistics for our numeric variables. Again, all statistics look reasonable, and it is notable that several of the medians are less than the means. We should look for skewness in our univariate plots later on.
 
 ```{r, echo=F, message=F}
 numeric_summary <- function(variable){
@@ -274,7 +280,7 @@ p + geom_histogram(aes(COST,..density.., fill=SERVICE), color="black", binwidth 
 
 ![](Plots/ridecost_distr.png)
 
-The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, the two service look kind of similar, with Lyft still a little bit cheaper than Uber.
+The boxplot below compares the distribution of cost by service during the morning and evening rush hour. In the morning rush hour, Lyft looks clearly cheaper than Uber. In the evening rush hour, costs for the two services look fairly similar, with Lyft still a bit cheaper than Uber.
 
 ```{r, warning=F, message=F, results='hide'}
 #Ride cost - boxplot
@@ -705,6 +711,7 @@ data2 %>%
   filter(meancost==min(meancost) | meandur==min(meandur)) %>% 
   data.frame(.) %>% kable()
 ```
+
 
 
 ### T-test
