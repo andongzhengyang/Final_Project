@@ -76,8 +76,6 @@ Because of our observations about differences in cost and differences in duratio
 
 ![](Plots/cost_per_min_boxp.png)
 
-# Analysis
-
 
 ### Cost vs Total Duration
 
@@ -88,9 +86,7 @@ It looks like in the morning rush hour, there are small but consistent differenc
 ![](Plots/cost_dur.png)
 
 
-
-
-# Final Analysis
+# Data Analysis
 
 
 In our final analysis, we ran several statistical tests to answer our initial research questions, including establishing a guide for when to travel and when to take each car service.
